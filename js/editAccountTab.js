@@ -165,7 +165,7 @@ window.saveEditedMember = async function () {
                 }
             } else {
                 // Step 2: Create membership (if applicable)
-                if (type && startDate) {
+                if (type) {
 
                     const membershipPayload = {
                         membershipId: row.dataset.membershipId,
