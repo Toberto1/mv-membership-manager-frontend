@@ -18,7 +18,7 @@ export function initFields() {
                 tab.classList.toggle('active', tabIndex === radioIndex);
             });
         });
-    }); 
+    });
 
     const addAccountTabChecked = document.querySelector('input[name="addAccountTabs"]:checked');
     if (addAccountTabChecked) addAccountTabChecked.dispatchEvent(new Event('change'));
@@ -169,6 +169,18 @@ window.addNewMember = async function () {
         util.showTopHeaderDialog("Account added successfully", { success: true, autoClose: true, duration: 3000 });
         util.clearAddAccountTab();
         util.whiteFlash("addAccount-container");
+
+        dom.swapTab(global.tabIndexs.search);
+
+        global.setSearchMethod("name");
+        document.getElementById("searchMethodSelect").value = "name";
+        document.getElementById("searchMethodTableHead").innerHTML = "Name";
+        document.getElementById("searchInput").value = name;
+
+        window.loadSearchTableResults();
+        window.loadDailyCheckins(util.getTodayString());
+        dom.swapTab(global.tabIndexs.search);
+
     } catch (error) {
         util.showTopHeaderDialog(error, { error: true });
     } finally {
