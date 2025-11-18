@@ -319,7 +319,7 @@ async function createUpcomingMembershipCheckinList(classes) {
     const hasAthletic = classes.some(cls => cls.name === "Athletic");
     const hasNormal = classes.some(cls => cls.name !== "Athletic");
 
-    const hasKids = classes.some(cls => cls.age_group.includes("Kid"));
+    const hasKids = classes.some(cls => cls.age_group.includes("Kid")) || classes.some(cls => cls.age_group.includes("Child"));
     const hasTeens = classes.some(cls => cls.age_group.includes("Teen"));
     const hasAdults = classes.some(cls => cls.age_group.includes("Adult") || cls.age_group.includes("Women's"));
 
