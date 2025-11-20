@@ -261,10 +261,13 @@ function usePass(userId, passType) {
 
 }
 
-window.loadSearchTableResults = async function () {
-
-    util.whiteFlash("searchAccount-container");
-    dom.swapTab(global.tabIndexs.search); //search tab
+window.loadSearchTableResults = async function (async = false) {
+    //Aysnc true means do not swap to search tab (used for auto refreshes)
+    
+    if (!async) {
+        util.whiteFlash("searchAccount-container");
+        dom.swapTab(global.tabIndexs.search); //search tab
+    }
 
     const searchTerm = document.getElementById("searchInput").value.trim();
     const searchMethod = global.getSearchMethod();
@@ -285,7 +288,7 @@ window.loadSearchTableResults = async function () {
 
         document.getElementById("search-content").classList.add("hidden");
         document.getElementById("upcomingCheckins-content").classList.remove("hidden");
-        dom.updateMainTitle("Upcoming Check-ins", { custom: true });
+        if (!async) dom.updateMainTitle("Upcoming Check-ins", { custom: true });
 
     } else {
 

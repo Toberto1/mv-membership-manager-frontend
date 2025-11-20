@@ -67,6 +67,13 @@ window.addEventListener('DOMContentLoaded', () => {
     editAccountTab.initFields();
 });
 
+setInterval( () => {
+    //Reload log and search incoming checkins every 10 minutes
+    dailyCheckinTab.loadDailyCheckins(util.getTodayString());
+    window.loadLogResults();
+    window.loadSearchTableResults(true);
+}, 10 * 60 * 1000); //10 minutes
+
 document.getElementById("clear-search").addEventListener("click", () => {
     searchBar.value = "";
     for (let item of filterRow) {
