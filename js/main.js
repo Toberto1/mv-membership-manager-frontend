@@ -26,7 +26,7 @@ if (token) {
         });
 } else window.location.href = '/auth.html';
 
-const VERSION = "1.0.1";
+const VERSION = "1.0.2";
 async function checkVersion() {
     try {
         const res = await fetch(`${global.API_IP}/api/mmVersion`, { cache: "no-store" });
