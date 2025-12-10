@@ -8,6 +8,8 @@ import * as editAccountTab from './editAccountTab.js';
 import * as dailyCheckinTab from './dailyCheckinTab.js';
 import * as logTab from './logTab.js';
 
+const VERSION = "1.0.3";
+
 const token = localStorage.getItem('token');
 if (token) {
     fetch(`${global.API_IP}/api/auth/verifyToken`, {
@@ -26,7 +28,7 @@ if (token) {
         });
 } else window.location.href = '/auth.html';
 
-const VERSION = "1.0.2";
+
 async function checkVersion() {
     try {
         const res = await fetch(`${global.API_IP}/api/mmVersion`, { cache: "no-store" });

@@ -262,7 +262,7 @@ function usePass(userId, passType) {
 }
 
 window.loadSearchTableResults = async function (async = false) {
-    //Aysnc true means do not swap to search tab (used for auto refreshes)
+    //async true means do not swap to search tab (used for auto refreshes)
     
     if (!async) {
         util.whiteFlash("searchAccount-container");
@@ -398,7 +398,7 @@ async function createUpcomingPassCheckinList() {
 }
 
 async function fetchUpcomingClasses() {
-    const BUFFER_MINUTES = 15;
+    const BUFFER_MINUTES = 25;
     const now = new Date();
 
     // Helper to format as "HH:MM:SS"
@@ -407,7 +407,6 @@ async function fetchUpcomingClasses() {
     };
 
     const center = new Date();
-    //const center = new Date(2025, 8, 26, 18, 0, 0);
 
     // Start = current time - buffer
     const start = new Date(center.getTime() - BUFFER_MINUTES * 60 * 1000);
@@ -424,7 +423,7 @@ async function fetchUpcomingClasses() {
             'Authorization': `Bearer ${global.getToken()}`
         },
         body: JSON.stringify({
-            day: util.getCurrentDayOfTheWeekUTC(),
+            day: util.getCurrentDayOfTheWeek(),
             startTime: start_time,
             endTime: end_time
         })
