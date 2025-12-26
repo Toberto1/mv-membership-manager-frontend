@@ -20,8 +20,9 @@
 
     <header>
         <br>
-        <div class="center">
+        <div class="center header-title-row">
             <h1>Membership Management (2.0)</h1>
+            <button id="logout-btn" class="logout-btn" title="Sign Out">⏻</button>
         </div>
         <br>
         <div id="search-container">
@@ -181,8 +182,6 @@
                     <p style="margin-bottom: 1em; font-size: 1.1rem; font-weight: bold;">No account selected to edit</p>
                     <div class="center"><input type="button" value="Go to Search Tab"
                             class="action-btn center clear-btn go-to-search"></div>
-
-                    <img src="images/noUserIcon.png" alt="No User Selected" style="opacity: 0.1;">
                 </div>
                 <div id="editAccountNavColumn" class="accountTabSelector-column tab-container">
                     <input type="radio" name="editAccountTabs" id="personalInfoTab-edit" checked>
@@ -275,6 +274,48 @@
                         </div>
                         <div class="settings-actions">
                             <input type="button" id="add-staff-btn" class="action-btn" value="+ Add Staff Account">
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Class Schedule</h3>
+                        <div class="schedule-controls">
+                            <select id="schedule-day-filter" class="custom-select">
+                                <option value="all">All Days</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                            </select>
+                        </div>
+                        <div id="schedule-list-container">
+                            <!-- Schedule loads here -->
+                        </div>
+                        <div class="settings-actions">
+                            <input type="button" id="add-class-btn" class="action-btn" value="+ Add Class">
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Change Your Password</h3>
+                        <div class="password-change-form">
+                            <div class="form-field">
+                                <label for="current-password">Current Password</label>
+                                <input type="password" id="current-password" placeholder="Enter current password">
+                            </div>
+                            <div class="form-field">
+                                <label for="new-password">New Password</label>
+                                <input type="password" id="new-password" placeholder="Enter new password">
+                            </div>
+                            <div class="form-field">
+                                <label for="confirm-password">Confirm New Password</label>
+                                <input type="password" id="confirm-password" placeholder="Confirm new password">
+                            </div>
+                            <div id="password-change-error" class="error-text"></div>
+                            <input type="button" id="change-password-btn" class="action-btn go-btn" value="Update Password">
                         </div>
                     </div>
 
