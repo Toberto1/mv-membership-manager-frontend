@@ -102,7 +102,9 @@ export function getSearchMethod() {
     return searchMethod;
 }
 
-//Log actions -> ui display mapping
+// Log actions -> UI display mapping
+// NOTE: Keys must match backend constants.js logActions
+// Values are human-readable labels for display
 export const logActions = {
   ACCOUNT_ADDED: 'Account added',
 
@@ -115,10 +117,14 @@ export const logActions = {
   MEMBERSHIP_ADDED: 'Membership added',
   MEMBERSHIP_UPDATED: 'Membership updated',
   MEMBERSHIP_STARTED: 'Membership started',
+  MEMBERSHIP_PAUSE_UPDATED: 'Membership pause updated',
 
   NOTE_UPDATED: 'Note updated',
 };
 
+// Log fields -> UI display mapping
+// NOTE: Keys must match backend constants.js logFields
+// Values are human-readable labels for display
 export const logFields = {
   opengympasses: 'Open Gym',
   classpasses: 'Classes',
@@ -134,12 +140,6 @@ export const logFields = {
   is_paused: 'Pause status',
   is_unlimited: 'Unlimited status',
   is_closed: 'Closed status',
-}
-
-export const membershipFields = {
-
-}
-
-
+};
 
 export const API_IP = 'https://monkeyvault-backend-production.up.railway.app';

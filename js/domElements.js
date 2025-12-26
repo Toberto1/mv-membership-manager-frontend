@@ -320,7 +320,6 @@ export function createUpComingClassBadge(classObj) {
     const badge = document.createElement("div");
     badge.classList.add("upcoming-class-badge");
 
-    console.log("obj: ", classObj);
     const color = getClassColor(classObj.id);
     badge.style.backgroundColor = color;
 

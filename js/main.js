@@ -72,6 +72,16 @@ window.addEventListener('DOMContentLoaded', () => {
     dailyCheckinTab.loadDailyCheckins(util.getTodayString());
     addAccountTab.initFields();
     editAccountTab.initFields();
+
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                util.kick();
+            }
+        });
+    }
 });
 
 setInterval( () => {
