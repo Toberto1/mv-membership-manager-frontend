@@ -3,7 +3,9 @@
  * Handles JWT decoding and role-based access control for the frontend
  */
 
-// Role constants (mirror backend constants.js)
+// Role constants - MUST match backend constants.js roles
+// Duplicated here because frontend needs roles at runtime for UI decisions
+// without making an API call. If backend roles change, update here too.
 export const roles = {
     MEMBER: 0,
     EMPLOYEE: 1,
@@ -50,11 +52,16 @@ export function initializeRole() {
     const decoded = decodeToken(token);
     if (!decoded) return false;
 
-    currentUserRole = decoded.role;
+    // Default to EMPLOYEE if role is missing (old tokens before role was added)
+    // Parse as integer in case database returns string
+    const roleValue = decoded.role !== undefined && decoded.role !== null
+        ? parseInt(decoded.role, 10)
+        : roles.EMPLOYEE;
+    currentUserRole = isNaN(roleValue) ? roles.EMPLOYEE : roleValue;
     currentUserId = decoded.id;
     currentUsername = decoded.username;
 
-    console.log(`Role initialized: ${roleLabels[currentUserRole]} (${currentUsername})`);
+    console.log(`Role initialized: ${roleLabels[currentUserRole] || 'Unknown'} (${currentUsername})`);
     return true;
 }
 

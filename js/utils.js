@@ -1,4 +1,5 @@
 import * as global from './globals.js';
+import * as roleManager from './roleManager.js';
 
 
 
@@ -119,6 +120,9 @@ export function clearAddAccountTab() {
 }
 
 export function kick() {
+    // Clear token and role state before redirecting
+    localStorage.removeItem('token');
+    roleManager.clearRole();
     window.location.href = '/auth.html';
 }
 
@@ -503,6 +507,22 @@ export function membershipDBToReadable(type) {
     return "";
 }
 
+
+/**
+ * Show a success toast message
+ * @param {string} message - Message to display
+ */
+export function showSuccess(message) {
+    showTopHeaderDialog(message, { success: true, autoClose: true, duration: 3000 });
+}
+
+/**
+ * Show an error toast message
+ * @param {string} message - Message to display
+ */
+export function showError(message) {
+    showTopHeaderDialog(message, { error: true, autoClose: true, duration: 5000 });
+}
 
 window.applyPreset = applyPreset;
 window.clearAddAccountTab = clearAddAccountTab;
