@@ -30,7 +30,7 @@ window.saveEditedMember = async function () {
     const privateAdults = parseInt(document.getElementById("privateadultPunches-edit")?.value) || 0;
     const aerialSilks = parseInt(document.getElementById("aerialsilksPunches-edit")?.value) || 0;
     const addAccountButton = document.getElementById("edit-account-button");
-    const AccountId = global.getselectedAccountForEdit().id;
+    const AccountId = global.getSelectedAccountForEdit().id;
 
 
     //Validity checks 

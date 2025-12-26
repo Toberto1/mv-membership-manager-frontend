@@ -534,7 +534,7 @@ export function createPassList(account) {
                                     console.error('Error fetching updated account:', err);
                                 });
 
-                            if (global.getselectedAccountForEdit() && global.getselectedAccountForEdit().id === account.id) {
+                            if (global.getSelectedAccountForEdit() && global.getSelectedAccountForEdit().id === account.id) {
                                 global.setSelectedAccountForEdit(null);
                                 dom.toggleEditTabButton();
                             }
@@ -637,7 +637,7 @@ export function createMembershipList(account) {
                                         console.error('Error fetching updated account:', err);
                                     });
 
-                                if (global.getselectedAccountForEdit() && global.getselectedAccountForEdit().id === account.id) {
+                                if (global.getSelectedAccountForEdit() && global.getSelectedAccountForEdit().id === account.id) {
                                     global.setSelectedAccountForEdit(null);
                                     dom.toggleEditTabButton();
                                 }
@@ -695,7 +695,7 @@ export function createMembershipList(account) {
                                         console.error('Error fetching updated account:', err);
                                     });
 
-                                if (global.getselectedAccountForEdit() && global.getselectedAccountForEdit().id === account.id) {
+                                if (global.getSelectedAccountForEdit() && global.getSelectedAccountForEdit().id === account.id) {
                                     global.setSelectedAccountForEdit(null);
                                     dom.toggleEditTabButton();
                                 }

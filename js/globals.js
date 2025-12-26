@@ -28,7 +28,7 @@ export function setSelectedAccountForEdit(account) {
     selectedAccountForEdit = account;
 }
 
-export function getselectedAccountForEdit() {
+export function getSelectedAccountForEdit() {
     return selectedAccountForEdit;
 }
 
@@ -38,7 +38,7 @@ export function setSelectedAccountForLog(account) {
     selectedAccountForLog = account;
 }
 
-export function getselectedAccountForLog() {
+export function getSelectedAccountForLog() {
     return selectedAccountForLog;
 }
 

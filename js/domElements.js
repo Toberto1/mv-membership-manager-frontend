@@ -790,7 +790,7 @@ function initEditTab() {
         editAccountContainer.removeChild(editAccountContainer.lastChild);
     }
 
-    const account = global.getselectedAccountForEdit();
+    const account = global.getSelectedAccountForEdit();
     const nav = document.getElementById("editAccountNavColumn");
 
     if (account === null) {
@@ -848,11 +848,11 @@ export function toggleLogFilterRow(force) {
 export function toggleEditTabButton() {
     const inputId = "editAccountTabButton";
     const label = document.querySelector(`label[for="${inputId}"]`);
-    if (global.getselectedAccountForEdit() === null) {
+    if (global.getSelectedAccountForEdit() === null) {
         label.classList.add("hidden");
     } else {
         label.classList.remove("hidden");
-        label.textContent = `Editting: ${global.getselectedAccountForEdit().name}`; // <-- change inner text
+        label.textContent = `Editting: ${global.getSelectedAccountForEdit().name}`; // <-- change inner text
     }
 }
 

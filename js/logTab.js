@@ -38,7 +38,7 @@ export async function loadLogResults() {
     const startTime = new Date(`${startDateValue}T00:00:00`).toISOString();
     const endTime = new Date(`${endDateValue}T23:59:59.999`).toISOString();
 
-    const accountId = global.getselectedAccountForLog() === null ? null : global.getselectedAccountForLog().id;
+    const accountId = global.getSelectedAccountForLog() === null ? null : global.getSelectedAccountForLog().id;
 
     const logs = await fetchLogs(
         startTime,
@@ -115,7 +115,7 @@ export async function loadLogResults() {
             const phoneDiv = document.createElement('div');
             const hasPhone = !!firstLog.phone_number;
 
-            if (global.getselectedAccountForLog() === null) {
+            if (global.getSelectedAccountForLog() === null) {
 
                 // Name div
                 nameDiv.textContent = hasName ? firstLog.name : 'Unknown User';
@@ -167,7 +167,7 @@ export async function loadLogResults() {
             }
 
             head.appendChild(timestampDiv);
-            if (global.getselectedAccountForLog() === null) {
+            if (global.getSelectedAccountForLog() === null) {
                 head.appendChild(nameDiv);
                 if (hasEmail) head.appendChild(emailDiv);
                 if (hasPhone) head.appendChild(phoneDiv);
@@ -274,15 +274,20 @@ export async function loadLogResults() {
     const selectedOptionText = actionTypeInput.querySelector(`option[value="${actionTypeInput.value}"]`)?.textContent;
     let html = `<p>Showing results from <strong>${resultDate}</strong> for <strong>${selectedOptionText}</strong> actions`;
 
-    const selectedAccount = global.getselectedAccountForLog();
+    const selectedAccount = global.getSelectedAccountForLog();
     if (selectedAccount !== null) {
-        html += ` (History for <span id="log-container-search-shortcut"> ${selectedAccount.name}</span>)`;
-
+        html += ` (History for <span id="log-container-search-shortcut"></span>)`;
     }
 
     html += ` <span style="color: #666; font-style: italic;">(${results.length})</span></p>`;
 
     logResultText.innerHTML = html;
+
+    // Set user name via textContent to prevent XSS
+    const nameSpan = document.getElementById("log-container-search-shortcut");
+    if (nameSpan && selectedAccount) {
+        nameSpan.textContent = ` ${selectedAccount.name}`;
+    }
 
 
 
@@ -291,7 +296,7 @@ export async function loadLogResults() {
         global.setSearchMethod("name");
         document.getElementById("searchMethodSelect").value = "name";
         document.getElementById("searchMethodTableHead").innerHTML = "Name";
-        document.getElementById("searchInput").value = global.getselectedAccountForLog().name;
+        document.getElementById("searchInput").value = global.getSelectedAccountForLog().name;
         loadSearchTableResults();
     });
 
