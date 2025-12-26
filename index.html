@@ -103,8 +103,8 @@
             <div class="spacer"></div>
             <div class="spacer"></div>
 
-            <!-- <input type="radio" name="tabs" id="tab6">
-            <label for="tab6">Settings</label> -->
+            <input type="radio" name="tabs" id="tab6">
+            <label for="tab6" class="hidden">Settings</label>
 
             <button id="right-tab-arrow" class="arrow right">&#10095;</button>
         </div>
@@ -267,7 +267,23 @@
             </div>
 
             <div id="settings-container" class="tab-content originIsFlex">
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <h3>Staff Account Management</h3>
+                        <div id="staff-list-container">
+                            <!-- Staff list loads here -->
+                        </div>
+                        <div class="settings-actions">
+                            <input type="button" id="add-staff-btn" class="action-btn" value="+ Add Staff Account">
+                        </div>
+                    </div>
 
+                    <div class="settings-section">
+                        <h3>System Information</h3>
+                        <p>Logged in as: <span id="current-user-display">Loading...</span></p>
+                        <p>App Version: <span id="app-version-display">1.0.3</span></p>
+                    </div>
+                </div>
             </div>
 
 

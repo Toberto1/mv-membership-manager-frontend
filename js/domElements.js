@@ -1,9 +1,34 @@
 import * as util from './utils.js';
 import * as global from './globals.js';
+import * as roleManager from './roleManager.js';
 
 const mainTitle = document.getElementById('main-title');
 const editAccountContainer = document.getElementById("editAccount-container");
 const noAccountSelected = document.getElementById("noAccountSelected");
+
+/**
+ * Apply role-based UI visibility
+ * Shows/hides tabs and features based on current user's role
+ */
+export function applyRoleBasedUI() {
+    // Settings tab (tab6) - ADMIN only
+    const settingsTabLabel = document.querySelector('label[for="tab6"]');
+    if (settingsTabLabel) {
+        if (roleManager.isAdmin()) {
+            settingsTabLabel.classList.remove('hidden');
+        } else {
+            settingsTabLabel.classList.add('hidden');
+        }
+    }
+
+    // Update user display if exists
+    const userDisplay = document.getElementById('current-user-display');
+    if (userDisplay) {
+        const username = roleManager.getUsername();
+        const roleLabel = roleManager.getRoleLabel(roleManager.getRole());
+        userDisplay.textContent = `${username} (${roleLabel})`;
+    }
+}
 
 export function createPersonalInfoFieldset(account) {
     const setID = account === null ? "add" : "edit";
@@ -769,6 +794,12 @@ export async function swapTab(tabIndex) {
 
         case global.tabIndexs.dailyCheckins:
             util.whiteFlash("dailyCheckins-container");
+            break;
+
+        case global.tabIndexs.settings:
+            util.whiteFlash("settings-container");
+            // Settings tab initialization will be handled by settingsTab.js
+            if (window.initSettingsTab) window.initSettingsTab();
             break;
 
     }

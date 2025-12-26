@@ -1,12 +1,14 @@
 import * as util from './utils.js';
 import * as dom from './domElements.js';
 import * as global from './globals.js';
+import * as roleManager from './roleManager.js';
 
 import * as searchTab from './searchTab.js';
 import * as addAccountTab from './addAccountTab.js';
 import * as editAccountTab from './editAccountTab.js';
 import * as dailyCheckinTab from './dailyCheckinTab.js';
 import * as logTab from './logTab.js';
+import * as settingsTab from './settingsTab.js';
 
 const VERSION = "1.0.3";
 
@@ -21,6 +23,9 @@ if (token) {
     })
         .then(res => {
             if (!res.ok) throw new Error('Invalid token');
+            // Initialize role from token after verification
+            roleManager.initializeRole();
+            dom.applyRoleBasedUI();
         })
         .catch(() => {
             localStorage.removeItem('token');

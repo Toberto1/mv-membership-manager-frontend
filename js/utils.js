@@ -433,27 +433,54 @@ export function groupPassEntries(entries) {
     return mergedEntries;
 }
 
-export function accountOnlyHasExpired(account) {
-    for (let membership of account.memberships) {
+export function accountOnlyHasExpired(account, filterTypes = null) {
+    const membershipsToCheck = filterTypes && filterTypes.length > 0
+        ? account.memberships.filter(m => filterTypes.includes(m.type))
+        : account.memberships;
+
+    if (membershipsToCheck.length === 0) return true;
+
+    for (let membership of membershipsToCheck) {
         if (!isExpired(membership.end_date)) {
             return false;
         }
     }
     return true;
-} 
-
-export function accountHasPasses(account) {
-    if (account.opengympasses > 0) return true;
-    if (account.classpasses > 0) return true;
-    if (account.privatekidpasses > 0) return true;
-    if (account.privateadultpasses > 0) return true;
-    if (account.aerialsilkspasses > 0) return true;
-    return false;   
 }
 
-export function seperateExpiredMemberships(accounts) {
-    const activeAccounts = accounts.filter(acc =>  !accountOnlyHasExpired(acc) || accountHasPasses(acc));
-    const expiredAccounts = accounts.filter(acc => accountOnlyHasExpired(acc) && !accountHasPasses(acc));
+export function accountHasPasses(account, filterTypes = null) {
+    // If no filter, check all passes
+    if (!filterTypes || filterTypes.length === 0) {
+        if (account.opengympasses > 0) return true;
+        if (account.classpasses > 0) return true;
+        if (account.privatekidpasses > 0) return true;
+        if (account.privateadultpasses > 0) return true;
+        if (account.aerialsilkspasses > 0) return true;
+        return false;
+    }
+
+    // Check only passes matching filter types
+    if (filterTypes.includes('open') && account.opengympasses > 0) return true;
+    if (filterTypes.includes('class') && account.classpasses > 0) return true;
+    return false;
+}
+
+export function seperateExpiredMemberships(accounts, filter = null) {
+    // Extract active filter types
+    const filterTypes = filter
+        ? Object.entries(filter).filter(([_, enabled]) => enabled).map(([type]) => type)
+        : null;
+
+    const hasActiveFilter = filterTypes && filterTypes.length > 0;
+
+    const activeAccounts = accounts.filter(acc =>
+        !accountOnlyHasExpired(acc, hasActiveFilter ? filterTypes : null) ||
+        accountHasPasses(acc, hasActiveFilter ? filterTypes : null)
+    );
+    const expiredAccounts = accounts.filter(acc =>
+        accountOnlyHasExpired(acc, hasActiveFilter ? filterTypes : null) &&
+        !accountHasPasses(acc, hasActiveFilter ? filterTypes : null)
+    );
     return [...activeAccounts, ...expiredAccounts];
 }
 
