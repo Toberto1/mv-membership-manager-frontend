@@ -17,12 +17,18 @@
   --space-8: 32px;
 
   /* Typography Scale */
-  --text-xs: 0.6875rem;   /* 11px */
-  --text-sm: 0.75rem;     /* 12px */
-  --text-base: 0.8125rem; /* 13px */
-  --text-md: 0.875rem;    /* 14px */
-  --text-lg: 1rem;        /* 16px */
-  --text-xl: 1.125rem;    /* 18px */
+  --text-xs: 0.6875rem;
+  /* 11px */
+  --text-sm: 0.75rem;
+  /* 12px */
+  --text-base: 0.8125rem;
+  /* 13px */
+  --text-md: 0.875rem;
+  /* 14px */
+  --text-lg: 1rem;
+  /* 16px */
+  --text-xl: 1.125rem;
+  /* 18px */
 
   /* Font Weights */
   --font-normal: 400;
@@ -84,7 +90,8 @@
 }
 
 /* Dark Mode */
-[data-bs-theme="dark"], .darkmode {
+[data-bs-theme="dark"],
+.darkmode {
   --color-bg: #1a1d21;
   --color-bg-elevated: #2b3035;
   --color-bg-subtle: #212529;
@@ -106,13 +113,16 @@
 /* ==========================================================================
    BASE RESET
    ========================================================================== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -147,7 +157,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-4);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .app-header h1 {
@@ -161,31 +171,65 @@ body {
   flex: 1;
   max-width: 400px;
   margin: 0 var(--space-6);
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .header-search input {
   width: 100%;
   padding: var(--space-2) var(--space-3);
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
+  padding-right: var(--space-8);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-md);
   color: #fff;
   font-size: var(--text-base);
 }
 
 .header-search input::placeholder {
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .header-search input:focus {
   outline: none;
-  background: rgba(255,255,255,0.15);
-  border-color: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.header-search .search-clear {
+  position: absolute;
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.header-search .search-clear.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.header-search .search-clear:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 .header-actions {
   display: flex;
-  align-items: center;
   gap: var(--space-2);
 }
 
@@ -193,7 +237,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   font-size: var(--text-sm);
 }
 
@@ -214,6 +258,57 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  transition: width 0.2s ease;
+}
+
+/* Collapsed sidebar */
+.sidebar.collapsed {
+  width: 56px;
+}
+
+.sidebar.collapsed .nav-label {
+  display: none;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: var(--space-2);
+}
+
+.sidebar.collapsed .nav-icon {
+  margin: 0;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.sidebar.collapsed .nav-divider {
+  margin: var(--space-2) var(--space-2);
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  margin: var(--space-2);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sidebar-toggle:hover {
+  background: var(--color-bg-muted);
+}
+
+.toggle-icon {
+  font-size: 16px;
+  color: var(--color-text-secondary);
 }
 
 .sidebar-nav {
@@ -239,6 +334,18 @@ body {
   width: 100%;
   text-align: left;
   transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-label {
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .nav-item:hover {
@@ -317,7 +424,20 @@ body {
 .member-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
+
+/* Column widths */
+.member-table th:nth-child(1),
+.member-table td:nth-child(1) { width: 20%; } /* Name */
+.member-table th:nth-child(2),
+.member-table td:nth-child(2) { width: 220px; } /* Memberships */
+.member-table th:nth-child(3),
+.member-table td:nth-child(3) { width: 29%; } /* Passes */
+.member-table th:nth-child(4),
+.member-table td:nth-child(4) { width: 26%; } /* Notes */
+.member-table th:nth-child(5),
+.member-table td:nth-child(5) { width: 86px; text-align: right; } /* Actions */
 
 .member-table th {
   text-align: left;
@@ -332,8 +452,8 @@ body {
 }
 
 .member-table td {
-  padding: var(--space-3);
-  font-size: var(--text-base);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
   border-bottom: 1px solid var(--color-border-subtle);
   vertical-align: middle;
 }
@@ -342,48 +462,147 @@ body {
   background: var(--color-bg-subtle);
 }
 
+/* Name column */
 .member-name {
   font-weight: var(--font-semibold);
   color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-contact {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Pass Badges */
+/* Notes column - truncate with ellipsis */
+.member-notes {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+/* Pass Badges - Two-tone pill design: [Label | Count]
+   Structure: <span class="pass-badge TYPE"><span class="badge-label">Text</span><span class="badge-count">Value</span></span>
+*/
 .pass-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 4px;
 }
 
+/* For badges directly in table cells (without wrapper) */
+.member-table td > .pass-badge {
+  margin-right: 6px;
+  margin-bottom: 2px;
+}
+
+.member-table td > .pass-badge:last-child {
+  margin-right: 0;
+}
+
+/* Badge container */
 .pass-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
   color: #fff;
+  overflow: hidden;
 }
 
-.pass-badge.opengym { background: var(--color-opengym); }
-.pass-badge.classes { background: var(--color-classes); }
-.pass-badge.athletic { background: var(--color-athletic); color: #000; }
-.pass-badge.private { background: var(--color-private); }
-.pass-badge.aerial { background: var(--color-aerial); }
-.pass-badge.membership { background: var(--color-classes); }
-.pass-badge.paused { background: var(--color-paused); }
-.pass-badge.expired { background: var(--color-expired); }
+/* Left section - the label */
+.pass-badge .badge-label {
+  padding: 4px 8px;
+  background: transparent;
+  min-width: 80px;
+  text-align: center;
+}
 
-.pass-count {
-  background: rgba(0,0,0,0.2);
-  padding: 0 4px;
-  border-radius: 2px;
-  font-size: var(--text-xs);
+/* Right section - the count with darker overlay */
+.pass-badge .badge-count {
+  padding: 4px 6px;
+  background-color: rgba(0, 0, 0, 0.2);
+  min-width: 42px;
+  text-align: center;
+}
+
+.pass-badge .badge-count.decreased {
+  background-color: var(--color-danger, #ef4444);
+}
+
+.pass-badge .badge-count.increased {
+  background-color: var(--color-success, #22c55e);
+}
+
+/* Action button within badge - universal dark overlay */
+.pass-badge .badge-action {
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  min-width: 50px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pass-badge .badge-action:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Badge color variants */
+.pass-badge.opengym {
+  background: #4caf50;
+}
+
+.pass-badge.classes {
+  background: #2196f3;
+}
+
+.pass-badge.athletic {
+  background: #ffb82a;
+  color: #000;
+}
+
+.pass-badge.private {
+  background: #f44336;
+}
+
+.pass-badge.walkin {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+}
+
+.pass-badge.aerial {
+  background: #8c52ff;
+}
+
+.pass-badge.membership {
+  background: #2196f3;
+}
+
+.pass-badge.paused,
+.pass-badge.attention {
+  background: #e27902;
+}
+
+.pass-badge.expired {
+  background: #8b0000;
+}
+
+/* Faded expired badge (14-30 days since expiration) */
+.pass-badge.expired-faded {
+  background: #8b0000;
+  opacity: 0.5;
 }
 
 .member-notes {
@@ -394,12 +613,6 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* Not-started membership badge */
-.pass-badge.notstarted {
-  background: var(--color-bg-muted);
-  color: var(--color-text-secondary);
 }
 
 /* Action link (Resume, Start) */
@@ -423,7 +636,7 @@ body {
   justify-content: center;
   gap: var(--space-1);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   cursor: pointer;
@@ -459,6 +672,16 @@ body {
 }
 
 .btn-success:hover {
+  filter: brightness(1.1);
+}
+
+.btn-warning {
+  background: var(--color-warning);
+  color: #fff;
+  border-color: var(--color-warning);
+}
+
+.btn-warning:hover {
   filter: brightness(1.1);
 }
 
@@ -634,9 +857,20 @@ body {
   font-weight: var(--font-medium);
 }
 
-.checkin-type.opengym { background: rgba(40, 167, 69, 0.15); color: var(--color-opengym); }
-.checkin-type.classes { background: rgba(0, 123, 255, 0.15); color: var(--color-classes); }
-.checkin-type.membership { background: rgba(0, 123, 255, 0.15); color: var(--color-classes); }
+.checkin-type.opengym {
+  background: rgba(40, 167, 69, 0.15);
+  color: var(--color-opengym);
+}
+
+.checkin-type.classes {
+  background: rgba(0, 123, 255, 0.15);
+  color: var(--color-classes);
+}
+
+.checkin-type.membership {
+  background: rgba(0, 123, 255, 0.15);
+  color: var(--color-classes);
+}
 
 /* ==========================================================================
    SUGGESTIONS / UPCOMING CHECK-INS
@@ -799,7 +1033,186 @@ body {
   padding: var(--space-6);
 }
 
-/* Membership List */
+/* Membership List - Card-based */
+.membership-form-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.membership-empty {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--color-text-muted);
+}
+
+.membership-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  overflow: hidden;
+}
+
+.membership-card.paused {
+  border-color: var(--color-paused);
+  background: color-mix(in srgb, var(--color-paused) 5%, var(--color-bg-elevated));
+}
+
+.membership-card.expired {
+  border-color: var(--color-expired);
+  opacity: 0.7;
+}
+
+.membership-card.closed {
+  border-color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.membership-card.new-membership {
+  border-style: dashed;
+  border-color: var(--color-primary);
+}
+
+/* Card Header - Single row: [Badge] [Dates] [Actions ▼] */
+.membership-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.membership-header:hover {
+  background: var(--color-bg-subtle);
+}
+
+.membership-header .pass-badge {
+  flex-shrink: 0;
+}
+
+.membership-dates {
+  flex: 1;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.membership-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.membership-expand-icon {
+  color: var(--color-text-muted);
+  transition: transform 0.2s;
+  font-size: var(--text-xs);
+}
+
+.membership-card.expanded .membership-expand-icon {
+  transform: rotate(180deg);
+}
+
+/* Card Body (edit form) */
+.membership-body {
+  display: none;
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+}
+
+.membership-card.expanded .membership-body {
+  display: block;
+}
+
+.membership-card.new-membership .membership-body {
+  display: block;
+}
+
+.membership-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.membership-form-grid .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.membership-form-grid .form-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.membership-form-grid .form-input,
+.membership-form-grid .form-select {
+  padding: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.duration-btns {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.duration-btns .btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  min-width: 36px;
+}
+
+.membership-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.membership-footer-left {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn-pause {
+  background: var(--color-warning);
+  color: white;
+  border: none;
+}
+
+.btn-pause:hover {
+  background: color-mix(in srgb, var(--color-warning) 85%, black);
+}
+
+.btn-close-mem {
+  background: var(--color-text-muted);
+  color: white;
+  border: none;
+}
+
+.btn-close-mem:hover {
+  background: var(--color-danger);
+}
+
+.btn-delete-mem {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.btn-delete-mem:hover {
+  background: var(--color-danger);
+  color: white;
+}
+
+/* Legacy membership list styles (for read-only views) */
 .membership-list {
   display: flex;
   flex-direction: column;
@@ -816,28 +1229,6 @@ body {
   background: var(--color-bg-subtle);
 }
 
-.membership-info {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.membership-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.membership-status {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--color-success);
-}
-
-.membership-actions {
-  display: flex;
-  gap: var(--space-1);
-}
 
 /* Passes Grid */
 .passes-grid {
@@ -861,6 +1252,57 @@ body {
 .pass-input-row .form-input {
   width: 80px;
   text-align: center;
+}
+
+/* Pass Edit Grid (Edit Account) */
+.passes-edit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pass-edit-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  transition: background 0.2s;
+}
+
+.pass-edit-item.has-passes {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.pass-edit-badge {
+  min-width: 140px;
+}
+
+.pass-edit-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.pass-count-input {
+  width: 70px !important;
+  text-align: center;
+  font-weight: var(--font-semibold);
+  font-size: var(--text-lg);
+  -moz-appearance: textfield;
+}
+
+.pass-count-input::-webkit-outer-spin-button,
+.pass-count-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pass-edit-controls .btn-sm {
+  min-width: 36px;
 }
 
 /* ==========================================================================
@@ -946,10 +1388,25 @@ body {
   font-weight: var(--font-medium);
 }
 
-.log-type.checkin { background: rgba(40, 167, 69, 0.15); color: var(--color-success); }
-.log-type.pass { background: rgba(0, 123, 255, 0.15); color: var(--color-primary); }
-.log-type.account { background: rgba(111, 66, 193, 0.15); color: var(--color-aerial); }
-.log-type.membership { background: rgba(253, 126, 20, 0.15); color: var(--color-warning); }
+.log-type.checkin {
+  background: rgba(40, 167, 69, 0.15);
+  color: var(--color-success);
+}
+
+.log-type.pass {
+  background: rgba(0, 123, 255, 0.15);
+  color: var(--color-primary);
+}
+
+.log-type.account {
+  background: rgba(111, 66, 193, 0.15);
+  color: var(--color-aerial);
+}
+
+.log-type.membership {
+  background: rgba(253, 126, 20, 0.15);
+  color: var(--color-warning);
+}
 
 .log-user {
   color: var(--color-text-muted);
@@ -960,6 +1417,59 @@ body {
 /* ==========================================================================
    SETTINGS
    ========================================================================== */
+
+/* Settings Sub-Navigation */
+.settings-subnav {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.settings-subnav-item {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.settings-subnav-item:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.settings-subnav-item.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* Settings Sub-Tab Content */
+.settings-subtab {
+  animation: fadeIn 0.15s ease;
+}
+
+.settings-subtab.hidden {
+  display: none;
+}
+
+/* Compact layout for accounts/security */
+.settings-compact {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Note: Schedule toolbar and list styles are in the CLASS TYPE section below */
+
 .settings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -1024,8 +1534,15 @@ body {
   font-weight: var(--font-medium);
 }
 
-.staff-role.admin { background: var(--color-aerial); color: #fff; }
-.staff-role.employee { background: var(--color-classes); color: #fff; }
+.staff-role.admin {
+  background: var(--color-aerial);
+  color: #fff;
+}
+
+.staff-role.employee {
+  background: var(--color-classes);
+  color: #fff;
+}
 
 /* Schedule items */
 .schedule-section .settings-section-body {
@@ -1082,13 +1599,566 @@ body {
   gap: var(--space-1);
 }
 
-.schedule-day-filter {
+/* Dynamic staff list (from settingsTab.js) */
+.staff-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+
+.staff-row:last-child {
+  margin-bottom: 0;
+}
+
+.staff-row.staff-disabled {
+  opacity: 0.6;
+  background: var(--color-bg-subtle);
+}
+
+.staff-username {
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.staff-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Sticker badges */
+.sticker {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-medium);
+}
+
+.sticker.admin-role {
+  background: var(--color-aerial);
+  color: #fff;
+}
+
+.sticker.employee-role {
+  background: var(--color-classes);
+  color: #fff;
+}
+
+.sticker.member-role {
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+}
+
+.sticker.disabled-badge {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.sticker.you-badge {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: normal;
+}
+
+/* Action buttons */
+.action-btn {
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.action-btn:hover {
+  opacity: 0.85;
+}
+
+.action-btn.go-btn {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.action-btn.cancel-btn {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+/* Note: Schedule list and class row styles are in the CLASS TYPE MANAGEMENT section below */
+
+/* Settings modal styles */
+.modal-content {
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 var(--space-4) 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.form-field {
+  margin-bottom: var(--space-3);
+}
+
+.form-field label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.form-field input,
+.form-field select {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.form-row .form-field {
+  flex: 1;
+}
+
+.custom-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.error-text {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  margin-top: var(--space-2);
+}
+
+.loading-text,
+.no-results {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-4);
+}
+
+/* Age group selector */
+.age-group-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.age-group-btn {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.age-group-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-subtle);
+}
+
+.age-group-btn.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   SCHEDULE TOOLBAR & FILTERS
+   -------------------------------------------------------------------------- */
+.schedule-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.schedule-filters {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.schedule-filter {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.schedule-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   SCHEDULE LIST (Simple Flat View)
+   -------------------------------------------------------------------------- */
+.schedule-full-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.schedule-day-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.schedule-day-header {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.class-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.class-type-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.class-row .class-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.class-row .class-type-label {
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+  min-width: 100px;
+}
+
+.class-row .class-day {
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  min-width: 36px;
+}
+
+.class-row .class-time {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  min-width: 70px;
+}
+
+.class-row .class-age-group {
+  font-size: var(--text-xs);
+  padding: 2px 6px;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+}
+
+.class-row .class-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   CLASS TYPE MANAGEMENT MODAL
+   -------------------------------------------------------------------------- */
+.modal-wide {
+  max-width: 500px;
+}
+
+.types-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.type-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+}
+
+.type-row .type-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.type-row .type-name {
+  flex: 1;
+  font-weight: var(--font-medium);
+}
+
+.type-name-input {
+  flex: 1;
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   background: var(--color-bg-elevated);
   color: var(--color-text);
+}
+
+.add-type-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+}
+
+.color-picker-inline {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.1s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.selected {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 2px var(--color-bg-elevated);
+}
+
+.small-btn {
+  padding: var(--space-1) var(--space-2) !important;
+  font-size: var(--text-xs) !important;
+}
+
+/* --------------------------------------------------------------------------
+   CLASS PREVIEW (Modal)
+   -------------------------------------------------------------------------- */
+.class-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.class-preview-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.class-preview-text {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   MANAGE TYPES MODAL
+   -------------------------------------------------------------------------- */
+.input-with-btn {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+.input-with-btn input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.types-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 300px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.type-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.type-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+/* Inline types list (tags style) */
+.types-list-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.types-list-inline .type-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.types-list-inline .type-item .remove-type-btn {
+  padding: 2px 6px;
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* Add mapping row */
+.add-mapping-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.add-mapping-row select {
+  flex: 1;
+}
+
+.add-mapping-row input[type="color"] {
+  width: 40px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* Color mappings list */
+.color-mappings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.color-mapping-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.color-mapping-item .color-input {
+  width: 32px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.color-mapping-item .mapping-label {
+  flex: 1;
+  font-size: var(--text-sm);
+}
+
+.color-mapping-item .remove-mapping-btn {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.modal-wide {
+  max-width: 480px;
 }
 
 /* ==========================================================================
@@ -1197,9 +2267,17 @@ body {
   background: var(--color-bg-subtle);
 }
 
-.checkin-option.membership { border-left: 4px solid var(--color-classes); }
-.checkin-option.classes { border-left: 4px solid var(--color-classes); }
-.checkin-option.opengym { border-left: 4px solid var(--color-opengym); }
+.checkin-option.membership {
+  border-left: 4px solid var(--color-classes);
+}
+
+.checkin-option.classes {
+  border-left: 4px solid var(--color-classes);
+}
+
+.checkin-option.opengym {
+  border-left: 4px solid var(--color-opengym);
+}
 
 .checkin-option .option-label {
   font-size: var(--text-base);
@@ -1227,32 +2305,72 @@ body {
   font-weight: var(--font-semibold);
   cursor: pointer;
   border: 1px solid transparent;
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
   transition: all 0.15s ease;
 }
 
 .filter-pill:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
 }
 
-.filter-pill.active.open { background: var(--color-opengym); color: #fff; border-color: var(--color-opengym); }
-.filter-pill.active.classes { background: var(--color-classes); color: #fff; border-color: var(--color-classes); }
-.filter-pill.active.athletic { background: var(--color-athletic); color: #000; border-color: var(--color-athletic); }
+.filter-pill.active.open {
+  background: var(--color-opengym);
+  color: #fff;
+  border-color: var(--color-opengym);
+}
+
+.filter-pill.active.classes {
+  background: var(--color-classes);
+  color: #fff;
+  border-color: var(--color-classes);
+}
+
+.filter-pill.active.athletic {
+  background: var(--color-athletic);
+  color: #000;
+  border-color: var(--color-athletic);
+}
 
 /* ==========================================================================
    UTILITY CLASSES
    ========================================================================== */
-.hidden { display: none !important; }
-.text-muted { color: var(--color-text-muted); }
-.text-sm { font-size: var(--text-sm); }
-.font-semibold { font-weight: var(--font-semibold); }
-.mt-2 { margin-top: var(--space-2); }
-.mt-4 { margin-top: var(--space-4); }
-.mb-4 { margin-bottom: var(--space-4); }
-.gap-2 { gap: var(--space-2); }
-.gap-4 { gap: var(--space-4); }
+.hidden {
+  display: none !important;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-sm {
+  font-size: var(--text-sm);
+}
+
+.font-semibold {
+  font-weight: var(--font-semibold);
+}
+
+.mt-2 {
+  margin-top: var(--space-2);
+}
+
+.mt-4 {
+  margin-top: var(--space-4);
+}
+
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+
+.gap-2 {
+  gap: var(--space-2);
+}
+
+.gap-4 {
+  gap: var(--space-4);
+}
 
 /* ==========================================================================
    RESPONSIVE
@@ -1349,3 +2467,769 @@ body {
     display: none;
   }
 }
+
+/* ==========================================================================
+   SCHEDULE SECTIONS (New Combo-Based Layout)
+   ========================================================================== */
+
+.schedule-section {
+  margin-bottom: var(--space-6);
+}
+
+.schedule-section:last-child {
+  margin-bottom: 0;
+}
+
+.schedule-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.schedule-section-header h4 {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Combos List */
+.combos-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.combo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.combo-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.combo-label {
+  flex: 1;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.combo-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.combo-color-input {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+.combo-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.combo-color-input::-webkit-color-swatch {
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+}
+
+.combo-color-input::-moz-color-swatch {
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+}
+
+.combo-color-input:hover {
+  transform: scale(1.1);
+}
+
+/* Hex color input row */
+.hex-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hex-preview {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+/* Database setup needed */
+.setup-needed {
+  padding: var(--space-4);
+  text-align: center;
+}
+
+/* Collapsible sections */
+.schedule-section.collapsible .schedule-section-header.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.collapse-icon {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.schedule-section.collapsible.expanded .collapse-icon {
+  transform: rotate(90deg);
+}
+
+.combos-list.collapsed {
+  display: none;
+}
+
+.combo-count {
+  font-size: var(--text-sm);
+  font-weight: normal;
+}
+
+/* Combo Preview (in modals) */
+.combo-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.combo-preview-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.combo-preview-text {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* Button size helpers */
+.btn-sm {
+  padding: var(--space-1) var(--space-2) !important;
+  font-size: var(--text-sm) !important;
+}
+
+/* ==========================================================================
+   TWO-PANEL CHECK-IN LAYOUT
+   ========================================================================== */
+
+/* Main Layout Container */
+.checkin-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-4);
+  min-height: calc(100vh - 150px);
+}
+
+/* ==========================================================================
+   LEFT PANEL: Schedule Sidebar
+   ========================================================================== */
+
+.checkin-schedule-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.schedule-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+}
+
+.schedule-panel-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.schedule-date-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.schedule-date-display {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  flex: 1;
+  text-align: center;
+}
+
+.btn-xs {
+  padding: 2px 6px !important;
+  font-size: var(--text-xs) !important;
+}
+
+/* Schedule Class List */
+.schedule-class-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+
+/* Time Group Header */
+.schedule-time-group {
+  margin-bottom: var(--space-2);
+}
+
+.schedule-time-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.schedule-time-header.now {
+  color: var(--color-success);
+}
+
+.schedule-time-header.now::before {
+  content: '●';
+  font-size: 8px;
+}
+
+/* Schedule Class Item */
+.schedule-class-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-1);
+  background: color-mix(in srgb, var(--class-color, var(--color-bg-muted)) 18%, var(--color-bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--class-color, var(--color-border)) 25%, var(--color-border));
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.schedule-class-item:hover {
+  background: color-mix(in srgb, var(--class-color, var(--color-bg-muted)) 28%, var(--color-bg-elevated));
+  border-color: color-mix(in srgb, var(--class-color, var(--color-border)) 50%, var(--color-border));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--class-color) 15%, transparent);
+}
+
+/* Class item with 2-row layout */
+.class-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.class-item-age {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: normal;
+}
+
+.schedule-class-item.selected {
+  background: color-mix(in srgb, var(--class-color, var(--color-primary)) 35%, var(--color-bg-elevated));
+  border-color: var(--class-color, var(--color-primary));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--class-color, var(--color-primary)) 25%, transparent);
+}
+
+.schedule-class-item.past {
+  opacity: 0.5;
+}
+
+.schedule-class-item.current {
+  box-shadow: 0 0 0 2px var(--color-success);
+}
+
+.class-item-name {
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.class-item-time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.class-item-count {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--class-color, var(--color-text-muted)) 20%, var(--color-bg-subtle));
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.class-item-count.has-checkins {
+  background: var(--class-color, var(--color-success));
+  color: #fff;
+}
+
+/* General Check-in Option */
+.schedule-general-option {
+  padding: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+}
+
+.schedule-class-item.general {
+  background: var(--color-bg-elevated);
+  border: 1px dashed var(--color-border);
+}
+
+.schedule-class-item.general .class-item-count {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+}
+
+.schedule-class-item.general:hover {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-primary);
+}
+
+.schedule-class-item.general.selected {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-elevated));
+  border-color: var(--color-primary);
+  border-style: solid;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* ==========================================================================
+   RIGHT PANEL: Check-in Workspace
+   ========================================================================== */
+
+.checkin-workspace-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Search Bar */
+.checkin-search-bar {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.checkin-search-bar .form-input {
+  flex: 1;
+}
+
+/* Search Results */
+.checkin-search-results {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.checkin-search-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  transition: background 0.15s ease;
+}
+
+.checkin-search-result:last-child {
+  border-bottom: none;
+}
+
+.checkin-search-result:hover {
+  background: var(--color-bg-subtle);
+}
+
+/* Search Result Item (used in two-panel check-in) */
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: var(--color-bg-subtle);
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.result-name {
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+}
+
+.result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.search-result-name {
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+}
+
+.search-result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Clickable Pass/Membership Badges */
+.pass-badge-clickable {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.pass-badge-clickable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.pass-badge-clickable.opengym {
+  background: var(--color-opengym);
+  color: #fff;
+}
+
+.pass-badge-clickable.classes {
+  background: var(--color-classes);
+  color: #fff;
+}
+
+.pass-badge-clickable.athletic {
+  background: var(--color-athletic);
+  color: #333;
+}
+
+.pass-badge-clickable.private {
+  background: var(--color-private);
+  color: #fff;
+}
+
+.pass-badge-clickable.membership {
+  border: 1px solid currentColor;
+}
+
+/* Class Info (inside section header) */
+.class-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.class-info-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.class-info-time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Attendees Section */
+.checkin-attendees-section {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.checkin-section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.checkin-section-count {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-success);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+}
+
+/* Attendees List */
+.checkin-attendees-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+
+.checkin-attendees-list .empty-state {
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.attendee-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-1);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+}
+
+.attendee-row:last-child {
+  margin-bottom: 0;
+}
+
+.attendee-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.attendee-name {
+  flex: 1;
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+}
+
+.attendee-time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.attendee-undo {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.attendee-undo:hover {
+  color: var(--color-danger);
+}
+
+/* Class Selector Dropdown */
+.class-selector-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--space-1);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.class-selector-item {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  transition: background 0.15s ease;
+}
+
+.class-selector-item:hover {
+  background: var(--color-bg-subtle);
+}
+
+.class-selector-item.selected {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ==========================================================================
+   DAILY CHECK-INS TAB (Activity Log)
+   ========================================================================== */
+
+.daily-checkins-layout {
+  display: flex;
+  gap: var(--space-4);
+  min-height: 400px;
+}
+
+.daily-checkins-list {
+  flex: 1;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.daily-checkins-sidebar {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.daily-checkins-info {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin-top: var(--space-4);
+}
+
+/* Daily Check-in Entry */
+.dailyCheckin-entry {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--text-sm);
+}
+
+.dailyCheckin-entry:last-child {
+  border-bottom: none;
+}
+
+.dailyCheckin-entry:hover {
+  background: var(--color-bg-subtle);
+}
+
+/* Sticker styles for pass/membership types */
+.sticker {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  background: var(--color-bg-subtle);
+}
+
+.oldToNewSticker {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.additive-update {
+  color: var(--color-success);
+}
+
+.subtractive-update {
+  color: var(--color-danger);
+}
+
+/* Pass type colors */
+.opengympasses-color { background: #FFE082; color: #5D4037; }
+.classpasses-color { background: #C5E1A5; color: #33691E; }
+.privatekidpasses-color { background: #B3E5FC; color: #01579B; }
+.privateadultpasses-color { background: #D1C4E9; color: #4527A0; }
+.aerialsilkspasses-color { background: #F8BBD9; color: #880E4F; }

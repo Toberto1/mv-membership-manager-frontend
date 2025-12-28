@@ -10,13 +10,19 @@ import * as roleManager from './roleManager.js';
 let initialized = false;
 let allClasses = []; // Cache for filtering
 
-// Day mapping: database stores 0-6
+// Day mapping: database stores 0-6 (0=Sunday)
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// Display order: Monday first (1,2,3,4,5,6,0)
+const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+
+// Use centralized constants from globals
+const AGE_GROUPS = global.CLASS_AGE_GROUPS;
+const DEFAULT_CLASS_TYPES = global.DEFAULT_CLASS_TYPES;
 
 /**
  * Initialize the settings tab
  */
-export function initSettingsTab() {
+export async function initSettingsTab() {
     if (!roleManager.isAdmin()) {
         console.warn('Settings tab requires admin role');
         return;
@@ -30,12 +36,21 @@ export function initSettingsTab() {
         userDisplay.textContent = `${username} (${roleLabel})`;
     }
 
-    // Load staff list and schedule
+    // Load combos from database first, then render
+    await loadCombos();
+    renderCombos();
+    restoreCombosState();
+    populateTypeFilter();
+
+    // Load staff list and schedule in parallel
     loadStaffList();
     loadSchedule();
 
     // Set up event listeners only once
     if (!initialized) {
+        // Settings sub-navigation
+        setupSettingsSubnav();
+
         const addStaffBtn = document.getElementById('add-staff-btn');
         if (addStaffBtn) {
             addStaffBtn.addEventListener('click', showAddStaffModal);
@@ -46,19 +61,59 @@ export function initSettingsTab() {
             changePasswordBtn.addEventListener('click', changePassword);
         }
 
-        // Schedule controls
-        const addClassBtn = document.getElementById('add-class-btn');
-        if (addClassBtn) {
-            addClassBtn.addEventListener('click', showAddClassModal);
+        // New Combo button
+        const newComboBtn = document.getElementById('new-combo-btn');
+        if (newComboBtn) {
+            newComboBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Don't trigger collapse toggle
+                showNewComboModal();
+            });
         }
 
+        // Combos section collapse toggle
+        const combosToggle = document.getElementById('combos-toggle');
+        if (combosToggle) {
+            combosToggle.addEventListener('click', (e) => {
+                // Don't toggle if clicking the button
+                if (e.target.closest('.btn')) return;
+                toggleCombosSection();
+            });
+        }
+
+        // Schedule filters
         const dayFilter = document.getElementById('schedule-day-filter');
         if (dayFilter) {
             dayFilter.addEventListener('change', filterSchedule);
         }
 
+        const typeFilter = document.getElementById('schedule-type-filter');
+        if (typeFilter) {
+            typeFilter.addEventListener('change', filterSchedule);
+        }
+
         initialized = true;
     }
+}
+
+/**
+ * Setup settings sub-navigation handlers
+ */
+function setupSettingsSubnav() {
+    document.querySelectorAll('.settings-subnav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const tab = item.dataset.settingsTab;
+            if (!tab) return;
+
+            // Update nav items
+            document.querySelectorAll('.settings-subnav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.settings-subtab').forEach(t => t.classList.add('hidden'));
+            const tabContent = document.getElementById(`settings-${tab}`);
+            if (tabContent) tabContent.classList.remove('hidden');
+        });
+    });
 }
 
 /**
@@ -396,6 +451,548 @@ function escapeHtml(str) {
 }
 
 // ============================================
+// CLASS COMBOS (Type + Age + Color) - Database-backed
+// ============================================
+
+// In-memory cache of combos from database
+// Format: { id, type, age_group, color }
+let classCombosCache = [];
+
+/**
+ * Load class combos from database API
+ */
+async function loadCombos() {
+    try {
+        const res = await fetch(`${global.API_IP}/api/settings/classCombos`, {
+            headers: {
+                'Authorization': `Bearer ${global.getToken()}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.status === 401) {
+            util.kick();
+            return;
+        }
+
+        if (!res.ok) {
+            throw new Error('Failed to load combos');
+        }
+
+        const { combos } = await res.json();
+        classCombosCache = combos || [];
+
+    } catch (err) {
+        console.error('Error loading combos:', err);
+        classCombosCache = [];
+    }
+}
+
+/**
+ * Auto-generate combos from existing schedule + predefined colors
+ * Call this once to populate combos from what's already scheduled
+ */
+async function syncCombosFromSchedule() {
+    if (!allClasses || allClasses.length === 0) return;
+
+    const combosToSync = [];
+
+    allClasses.forEach(c => {
+        const type = (c.name || '').trim();
+        const ageGroup = (c.age_group || '').trim();
+        if (!type) return;
+
+        // Check if already exists in cache
+        const exists = classCombosCache.some(combo =>
+            combo.type.toLowerCase() === type.toLowerCase() &&
+            (combo.age_group || '').toLowerCase() === ageGroup.toLowerCase()
+        );
+
+        if (!exists) {
+            // Check if already in our sync list
+            const inSyncList = combosToSync.some(combo =>
+                combo.type.toLowerCase() === type.toLowerCase() &&
+                (combo.age_group || '').toLowerCase() === ageGroup.toLowerCase()
+            );
+
+            if (!inSyncList) {
+                // Get color from predefined CLASS_COLORS
+                const key = `${type.toLowerCase()}.${ageGroup.toLowerCase()}`;
+                const color = global.CLASS_COLORS[key] || global.CLASS_COLORS[type.toLowerCase()] || global.DEFAULT_CLASS_COLOR;
+                combosToSync.push({ type, age_group: ageGroup || null, color });
+            }
+        }
+    });
+
+    if (combosToSync.length > 0) {
+        try {
+            const res = await fetch(`${global.API_IP}/api/settings/classCombos/bulk`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${global.getToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ combos: combosToSync })
+            });
+
+            if (res.ok) {
+                console.log(`Auto-created ${combosToSync.length} combos from existing schedule`);
+                await loadCombos();
+                renderCombos();
+                populateTypeFilter();
+            }
+        } catch (err) {
+            console.error('Error syncing combos from schedule:', err);
+        }
+    }
+}
+
+/**
+ * Get all combos as array of objects (from cache)
+ */
+function getCombosArray() {
+    return classCombosCache.map(c => ({
+        id: c.id,
+        key: `${c.type.toLowerCase()}.${(c.age_group || '').toLowerCase()}`,
+        type: c.type.toLowerCase(),
+        ageGroup: (c.age_group || '').toLowerCase(),
+        color: c.color
+    })).sort((a, b) => a.type.localeCompare(b.type) || a.ageGroup.localeCompare(b.ageGroup));
+}
+
+/**
+ * Add a new combo to database
+ */
+async function addCombo(type, ageGroup, color) {
+    try {
+        const res = await fetch(`${global.API_IP}/api/settings/classCombos`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${global.getToken()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: type.trim(),
+                age_group: ageGroup?.trim() || null,
+                color
+            })
+        });
+
+        if (res.status === 401) {
+            util.kick();
+            return false;
+        }
+
+        if (res.status === 409) {
+            util.showError('This combo already exists');
+            return false;
+        }
+
+        if (!res.ok) {
+            const data = await res.json();
+            util.showError(data.error || 'Failed to create combo');
+            return false;
+        }
+
+        // Refresh cache
+        await loadCombos();
+        return true;
+    } catch (err) {
+        console.error('Error adding combo:', err);
+        util.showError('Network error');
+        return false;
+    }
+}
+
+/**
+ * Update a combo's color in database
+ */
+async function updateComboColor(comboId, color) {
+    try {
+        const res = await fetch(`${global.API_IP}/api/settings/classCombos/${comboId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${global.getToken()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ color })
+        });
+
+        if (res.status === 401) {
+            util.kick();
+            return false;
+        }
+
+        if (!res.ok) {
+            throw new Error('Failed to update combo');
+        }
+
+        // Update local cache
+        const combo = classCombosCache.find(c => c.id === comboId);
+        if (combo) combo.color = color;
+
+        return true;
+    } catch (err) {
+        console.error('Error updating combo color:', err);
+        return false;
+    }
+}
+
+/**
+ * Delete a combo from database
+ */
+async function deleteCombo(comboId) {
+    try {
+        const res = await fetch(`${global.API_IP}/api/settings/classCombos/${comboId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${global.getToken()}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.status === 401) {
+            util.kick();
+            return false;
+        }
+
+        if (!res.ok) {
+            const data = await res.json();
+            util.showError(data.error || 'Failed to delete combo');
+            return false;
+        }
+
+        // Refresh cache
+        await loadCombos();
+        return true;
+    } catch (err) {
+        console.error('Error deleting combo:', err);
+        util.showError('Network error');
+        return false;
+    }
+}
+
+/**
+ * Get color for a type + age group (from cache)
+ */
+function getComboColor(type, ageGroup) {
+    if (!type) return global.DEFAULT_CLASS_COLOR;
+
+    // Search in cache
+    const combo = classCombosCache.find(c =>
+        c.type.toLowerCase() === type.toLowerCase() &&
+        (c.age_group || '').toLowerCase() === (ageGroup || '').toLowerCase()
+    );
+    if (combo) return combo.color;
+
+    // Fallback to hardcoded colors (for schedule entries without combos)
+    return global.getClassColor(type, ageGroup);
+}
+
+/**
+ * Toggle combos section collapsed/expanded
+ */
+function toggleCombosSection() {
+    const section = document.querySelector('.schedule-section.collapsible');
+    const container = document.getElementById('combos-list-container');
+    if (!section || !container) return;
+
+    const isExpanded = section.classList.toggle('expanded');
+    container.classList.toggle('collapsed', !isExpanded);
+
+    // Save state
+    localStorage.setItem('combosExpanded', isExpanded ? '1' : '0');
+}
+
+/**
+ * Restore combos section state
+ */
+function restoreCombosState() {
+    const isExpanded = localStorage.getItem('combosExpanded') === '1';
+    const section = document.querySelector('.schedule-section.collapsible');
+    const container = document.getElementById('combos-list-container');
+    if (!section || !container) return;
+
+    if (isExpanded) {
+        section.classList.add('expanded');
+        container.classList.remove('collapsed');
+    }
+}
+
+/**
+ * Update combo count display
+ */
+function updateComboCount() {
+    const countEl = document.getElementById('combo-count');
+    if (!countEl) return;
+    const count = getCombosArray().length;
+    countEl.textContent = count > 0 ? `(${count})` : '';
+}
+
+/**
+ * Render the combos list
+ */
+function renderCombos() {
+    const container = document.getElementById('combos-list-container');
+    if (!container) return;
+
+    const combos = getCombosArray();
+    updateComboCount();
+
+    if (combos.length === 0) {
+        container.innerHTML = '<p class="text-muted">No class combos defined. Click "+ New" to create one.</p>';
+        return;
+    }
+
+    container.innerHTML = combos.map(c => {
+        const displayAge = c.ageGroup ? ` - ${capitalize(c.ageGroup)}` : '';
+        return `
+            <div class="combo-row" data-id="${c.id}" data-key="${escapeHtml(c.key)}">
+                <span class="combo-dot" style="background: ${c.color};"></span>
+                <span class="combo-label">${capitalize(c.type)}${displayAge}</span>
+                <div class="combo-actions">
+                    <input type="color" class="combo-color-input" value="${c.color}" data-id="${c.id}" title="Change color">
+                    <input type="button" class="action-btn go-btn btn-sm schedule-combo-btn" data-key="${escapeHtml(c.key)}" value="Schedule">
+                    <input type="button" class="action-btn cancel-btn btn-sm delete-combo-btn" data-id="${c.id}" value="X">
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Event: Change color inline (debounced save to database)
+    container.querySelectorAll('.combo-color-input').forEach(input => {
+        let debounceTimer;
+        input.addEventListener('input', (e) => {
+            const comboId = parseInt(e.target.dataset.id);
+            const newColor = e.target.value;
+
+            // Update dot color immediately
+            const row = e.target.closest('.combo-row');
+            row.querySelector('.combo-dot').style.background = newColor;
+
+            // Update local cache immediately for smooth UX
+            const combo = classCombosCache.find(c => c.id === comboId);
+            if (combo) combo.color = newColor;
+
+            // Refresh schedule to show new colors
+            filterSchedule();
+
+            // Debounce the API call
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateComboColor(comboId, newColor);
+            }, 500);
+        });
+    });
+
+    // Event: Schedule combo
+    container.querySelectorAll('.schedule-combo-btn').forEach(btn => {
+        btn.addEventListener('click', () => showScheduleModal(btn.dataset.key));
+    });
+
+    // Event: Delete combo
+    container.querySelectorAll('.delete-combo-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (confirm('Delete this combo?')) {
+                const comboId = parseInt(btn.dataset.id);
+                if (await deleteCombo(comboId)) {
+                    renderCombos();
+                    populateTypeFilter();
+                }
+            }
+        });
+    });
+}
+
+/**
+ * Capitalize first letter of each word
+ */
+function capitalize(str) {
+    return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+/**
+ * Show modal to create a new combo
+ */
+function showNewComboModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'new-combo-modal';
+
+    // Build type options (from default types + any custom types in existing combos)
+    const existingTypes = new Set(getCombosArray().map(c => c.type));
+    const allTypes = [...new Set([...DEFAULT_CLASS_TYPES.map(t => t.toLowerCase()), ...existingTypes])];
+    const typeOptions = allTypes.map(t => `<option value="${escapeHtml(t)}">${capitalize(t)}</option>`).join('');
+    const ageOptions = AGE_GROUPS.map(a => `<option value="${escapeHtml(a)}">${a}</option>`).join('');
+
+    overlay.innerHTML = `
+        <div class="modal-content">
+            <h3>New Class Combo</h3>
+
+            <div class="combo-preview" id="combo-preview">
+                <span class="combo-preview-dot" id="preview-dot" style="background: #808080;"></span>
+                <span class="combo-preview-text" id="preview-text">Select type...</span>
+            </div>
+
+            <div class="form-field">
+                <label>Type</label>
+                <div class="input-with-btn">
+                    <select id="combo-type" class="custom-select">
+                        <option value="">-- Select or type new --</option>
+                        ${typeOptions}
+                    </select>
+                    <input type="text" id="combo-type-new" placeholder="Or type new..." style="flex: 1;">
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label>Age Group</label>
+                <select id="combo-age" class="custom-select">
+                    <option value="">-- Select --</option>
+                    ${ageOptions}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Color (hex)</label>
+                <div class="hex-input-row">
+                    <span class="hex-preview" id="hex-preview" style="background: #808080;"></span>
+                    <input type="text" id="combo-color" value="#808080" placeholder="#808080" maxlength="7" style="width: 100px;">
+                </div>
+            </div>
+
+            <div id="combo-modal-error" class="error-text"></div>
+            <div class="modal-actions">
+                <input type="button" id="save-combo-btn" class="action-btn go-btn" value="Create Combo">
+                <input type="button" id="cancel-combo-btn" class="action-btn cancel-btn" value="Cancel">
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const typeSelect = document.getElementById('combo-type');
+    const typeNew = document.getElementById('combo-type-new');
+    const ageSelect = document.getElementById('combo-age');
+    const colorInput = document.getElementById('combo-color');
+    const hexPreview = document.getElementById('hex-preview');
+    const previewDot = document.getElementById('preview-dot');
+    const previewText = document.getElementById('preview-text');
+
+    function isValidHex(hex) {
+        return /^#[0-9A-Fa-f]{6}$/.test(hex);
+    }
+
+    function updatePreview() {
+        const type = typeNew.value.trim() || typeSelect.value;
+        const age = ageSelect.value;
+        let color = colorInput.value.trim();
+
+        // Auto-add # if missing
+        if (color && !color.startsWith('#')) {
+            color = '#' + color;
+            colorInput.value = color;
+        }
+
+        // Update previews if valid hex
+        if (isValidHex(color)) {
+            previewDot.style.background = color;
+            hexPreview.style.background = color;
+        }
+
+        let text = type ? capitalize(type) : 'Select type...';
+        if (age) text += ` - ${age}`;
+        previewText.textContent = text;
+    }
+
+    typeSelect.addEventListener('change', () => {
+        typeNew.value = '';
+        updatePreview();
+    });
+    typeNew.addEventListener('input', () => {
+        typeSelect.value = '';
+        updatePreview();
+    });
+    ageSelect.addEventListener('change', updatePreview);
+    colorInput.addEventListener('input', updatePreview);
+
+    document.getElementById('cancel-combo-btn').addEventListener('click', () => overlay.remove());
+
+    document.getElementById('save-combo-btn').addEventListener('click', async () => {
+        const type = (typeNew.value.trim() || typeSelect.value);
+        const age = ageSelect.value;
+        let color = colorInput.value.trim();
+        const errorDiv = document.getElementById('combo-modal-error');
+
+        if (!type) {
+            errorDiv.textContent = 'Please select or enter a type';
+            return;
+        }
+        if (!age) {
+            errorDiv.textContent = 'Please select an age group';
+            return;
+        }
+
+        // Auto-add # if missing
+        if (color && !color.startsWith('#')) {
+            color = '#' + color;
+        }
+
+        if (!isValidHex(color)) {
+            errorDiv.textContent = 'Invalid hex color (e.g. #FF5757)';
+            return;
+        }
+
+        // Check if already exists in cache
+        const exists = classCombosCache.some(c =>
+            c.type.toLowerCase() === type.toLowerCase() &&
+            (c.age_group || '').toLowerCase() === age.toLowerCase()
+        );
+        if (exists) {
+            errorDiv.textContent = 'This combo already exists';
+            return;
+        }
+
+        const success = await addCombo(type, age, color);
+        if (success) {
+            overlay.remove();
+            renderCombos();
+            populateTypeFilter();
+            util.showSuccess('Combo created');
+        }
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+}
+
+/**
+ * Populate the type filter dropdown based on combos
+ */
+function populateTypeFilter() {
+    const typeFilter = document.getElementById('schedule-type-filter');
+    if (!typeFilter) return;
+
+    const types = [...new Set(getCombosArray().map(c => c.type))];
+
+    let html = '<option value="all">All Types</option>';
+    types.forEach(type => {
+        html += `<option value="${escapeHtml(type)}">${capitalize(type)}</option>`;
+    });
+    typeFilter.innerHTML = html;
+}
+
+/**
+ * Get color for a class entry based on its name/type and age_group
+ */
+function getClassEntryColor(classEntry) {
+    const type = classEntry.name || '';
+    const ageGroup = classEntry.age_group || '';
+    return getComboColor(type, ageGroup);
+}
+
+// ============================================
 // SCHEDULE MANAGEMENT
 // ============================================
 
@@ -427,6 +1024,8 @@ async function loadSchedule() {
 
         const { classes } = await res.json();
         allClasses = classes;
+        // Auto-create combos from existing schedule entries
+        await syncCombosFromSchedule();
         filterSchedule();
 
     } catch (err) {
@@ -440,19 +1039,26 @@ async function loadSchedule() {
  */
 function filterSchedule() {
     const dayFilter = document.getElementById('schedule-day-filter')?.value || 'all';
+    const typeFilter = document.getElementById('schedule-type-filter')?.value || 'all';
 
     let filtered = allClasses;
 
+    // Filter by day
     if (dayFilter !== 'all') {
         const dayNum = parseInt(dayFilter);
         filtered = filtered.filter(c => c.day === dayNum);
+    }
+
+    // Filter by type (case-insensitive comparison)
+    if (typeFilter !== 'all') {
+        filtered = filtered.filter(c => (c.name || '').toLowerCase() === typeFilter.toLowerCase());
     }
 
     renderSchedule(filtered);
 }
 
 /**
- * Render the schedule list
+ * Render the schedule grouped by day with headers
  */
 function renderSchedule(classes) {
     const container = document.getElementById('schedule-list-container');
@@ -466,32 +1072,37 @@ function renderSchedule(classes) {
     // Group by day
     const byDay = {};
     classes.forEach(c => {
-        const dayNum = c.day;
-        if (!byDay[dayNum]) byDay[dayNum] = [];
-        byDay[dayNum].push(c);
+        const day = c.day;
+        if (!byDay[day]) byDay[day] = [];
+        byDay[day].push(c);
     });
 
-    const selectedDay = document.getElementById('schedule-day-filter')?.value;
+    // Sort classes within each day by time
+    Object.values(byDay).forEach(dayClasses => {
+        dayClasses.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    });
 
     let html = '';
-    // Iterate 0-6 for proper day order
-    for (let dayNum = 0; dayNum <= 6; dayNum++) {
-        if (!byDay[dayNum]) continue;
+    // Use DAY_ORDER for Monday-first display
+    DAY_ORDER.filter(day => byDay[day]).forEach(day => {
+        const dayName = DAY_NAMES[day] || 'Unknown';
+        const dayClasses = byDay[day];
 
-        // Only show day header if showing all days
-        if (selectedDay === 'all') {
-            html += `<div class="schedule-day-header">${DAY_NAMES[dayNum]}</div>`;
-        }
+        html += `<div class="schedule-day-group">`;
+        html += `<div class="schedule-day-header">${dayName}</div>`;
 
-        byDay[dayNum].forEach(c => {
+        dayClasses.forEach(c => {
+            const color = getClassEntryColor(c);
+            const typeName = c.name || 'Unknown';
             const timeStr = formatTime(c.time);
 
             html += `
                 <div class="class-row" data-id="${c.id}">
+                    <span class="class-type-dot" style="background: ${color};" title="${escapeHtml(typeName)}"></span>
                     <div class="class-info">
+                        <span class="class-type-label">${escapeHtml(typeName)}</span>
                         <span class="class-time">${timeStr}</span>
-                        <span class="class-name">${escapeHtml(c.name || 'Unnamed')}</span>
-                        ${c.age_group ? `<span class="class-type sticker">${escapeHtml(c.age_group)}</span>` : ''}
+                        ${c.age_group ? `<span class="class-age-group sticker">${escapeHtml(c.age_group)}</span>` : ''}
                     </div>
                     <div class="class-actions">
                         <input type="button" class="action-btn edit-class-btn" data-id="${c.id}" value="Edit">
@@ -500,7 +1111,9 @@ function renderSchedule(classes) {
                 </div>
             `;
         });
-    }
+
+        html += `</div>`;
+    });
 
     container.innerHTML = html;
 
@@ -527,90 +1140,73 @@ function formatTime(timeStr) {
 }
 
 /**
- * Show modal to add a new class
+ * Show modal to schedule a combo (just day/time)
+ * @param {string} comboKey - The combo key (type.agegroup) to schedule
+ * @param {object} editData - Optional existing class data for editing
  */
-function showAddClassModal() {
-    showClassModal(null);
-}
+function showScheduleModal(comboKey, editData = null) {
+    const isEdit = !!editData;
+    const combo = getCombosArray().find(c => c.key === comboKey);
 
-/**
- * Show modal to edit a class
- */
-function showEditClassModal(id) {
-    const classData = allClasses.find(c => c.id == id);
-    if (!classData) {
-        util.showError('Class not found');
+    if (!combo && !isEdit) {
+        util.showError('Combo not found');
         return;
     }
-    showClassModal(classData);
-}
 
-/**
- * Show class add/edit modal
- */
-function showClassModal(classData) {
-    const isEdit = !!classData;
-    const title = isEdit ? 'Edit Class' : 'Add Class';
+    // For editing, get type/age from the existing data
+    const type = isEdit ? editData.name : combo.type;
+    const ageGroup = isEdit ? editData.age_group : combo.ageGroup;
+    const color = getComboColor(type, ageGroup);
+    const displayAge = ageGroup ? ` - ${capitalize(ageGroup)}` : '';
 
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
-    overlay.id = 'class-modal';
+    overlay.id = 'schedule-modal';
 
-    // Build day options
-    const dayOptions = DAY_NAMES.map((name, idx) =>
-        `<option value="${idx}" ${classData?.day === idx ? 'selected' : ''}>${name}</option>`
+    // Build day options (Monday first)
+    const dayOptions = DAY_ORDER.map(idx =>
+        `<option value="${idx}" ${editData?.day === idx ? 'selected' : ''}>${DAY_NAMES[idx]}</option>`
     ).join('');
 
     overlay.innerHTML = `
         <div class="modal-content">
-            <h3>${title}</h3>
-            <div class="form-field">
-                <label for="class-name">Class Name</label>
-                <input type="text" id="class-name" placeholder="e.g., Parkour Basics" value="${escapeHtml(classData?.name || '')}">
+            <h3>${isEdit ? 'Edit Schedule Entry' : 'Schedule Class'}</h3>
+
+            <div class="combo-preview">
+                <span class="combo-preview-dot" style="background: ${color};"></span>
+                <span class="combo-preview-text">${capitalize(type)}${displayAge}</span>
             </div>
+
             <div class="form-row">
                 <div class="form-field">
-                    <label for="class-day">Day</label>
-                    <select id="class-day" class="custom-select">
+                    <label for="schedule-day">Day</label>
+                    <select id="schedule-day" class="custom-select">
                         ${dayOptions}
                     </select>
                 </div>
                 <div class="form-field">
-                    <label for="class-time">Time</label>
-                    <input type="time" id="class-time" value="${classData?.time?.slice(0, 5) || ''}">
+                    <label for="schedule-time">Time</label>
+                    <input type="time" id="schedule-time" value="${editData?.time?.slice(0, 5) || ''}">
                 </div>
             </div>
-            <div class="form-field">
-                <label for="class-age-group">Age Group</label>
-                <input type="text" id="class-age-group" placeholder="e.g., Kids, Adults, Parent & Child" value="${escapeHtml(classData?.age_group || '')}">
-            </div>
-            <div id="class-modal-error" class="error-text"></div>
+
+            <div id="schedule-modal-error" class="error-text"></div>
             <div class="modal-actions">
-                <input type="button" id="save-class-btn" class="action-btn go-btn" value="${isEdit ? 'Save Changes' : 'Add Class'}">
-                <input type="button" id="cancel-class-btn" class="action-btn cancel-btn" value="Cancel">
+                <input type="button" id="save-schedule-btn" class="action-btn go-btn" value="${isEdit ? 'Save Changes' : 'Add to Schedule'}">
+                <input type="button" id="cancel-schedule-btn" class="action-btn cancel-btn" value="Cancel">
             </div>
         </div>
     `;
 
     document.body.appendChild(overlay);
 
-    // Event listeners
-    document.getElementById('cancel-class-btn').addEventListener('click', () => {
-        overlay.remove();
-    });
+    document.getElementById('cancel-schedule-btn').addEventListener('click', () => overlay.remove());
 
-    document.getElementById('save-class-btn').addEventListener('click', async () => {
-        const name = document.getElementById('class-name').value.trim();
-        const day = parseInt(document.getElementById('class-day').value);
-        const time = document.getElementById('class-time').value;
-        const age_group = document.getElementById('class-age-group').value.trim() || null;
-        const errorDiv = document.getElementById('class-modal-error');
+    document.getElementById('save-schedule-btn').addEventListener('click', async () => {
+        const day = parseInt(document.getElementById('schedule-day').value);
+        const time = document.getElementById('schedule-time').value;
+        const errorDiv = document.getElementById('schedule-modal-error');
 
-        // Validation
-        if (!name) {
-            errorDiv.textContent = 'Class name is required';
-            return;
-        }
         if (!time) {
             errorDiv.textContent = 'Time is required';
             return;
@@ -618,7 +1214,7 @@ function showClassModal(classData) {
 
         try {
             const url = isEdit
-                ? `${global.API_IP}/api/classes/editClass/${classData.id}`
+                ? `${global.API_IP}/api/classes/editClass/${editData.id}`
                 : `${global.API_IP}/api/classes/addClass`;
 
             const method = isEdit ? 'PATCH' : 'POST';
@@ -629,7 +1225,12 @@ function showClassModal(classData) {
                     'Authorization': `Bearer ${global.getToken()}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name, day, time, age_group })
+                body: JSON.stringify({
+                    name: type,
+                    day,
+                    time,
+                    age_group: ageGroup
+                })
             });
 
             if (res.status === 401) {
@@ -640,26 +1241,37 @@ function showClassModal(classData) {
             const data = await res.json();
 
             if (!res.ok) {
-                errorDiv.textContent = data.error || 'Failed to save class';
+                errorDiv.textContent = data.error || 'Failed to save';
                 return;
             }
 
             overlay.remove();
-            util.showSuccess(isEdit ? 'Class updated' : 'Class added');
+            util.showSuccess(isEdit ? 'Entry updated' : 'Class scheduled');
             loadSchedule();
 
         } catch (err) {
-            console.error('Error saving class:', err);
+            console.error('Error saving schedule:', err);
             errorDiv.textContent = 'Network error. Please try again.';
         }
     });
 
-    // Close on overlay click
     overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            overlay.remove();
-        }
+        if (e.target === overlay) overlay.remove();
     });
+}
+
+/**
+ * Show modal to edit a scheduled class
+ */
+function showEditClassModal(id) {
+    const classData = allClasses.find(c => c.id == id);
+    if (!classData) {
+        util.showError('Class not found');
+        return;
+    }
+    // Generate the combo key from existing data
+    const comboKey = `${(classData.name || '').toLowerCase()}.${(classData.age_group || '').toLowerCase()}`;
+    showScheduleModal(comboKey, classData);
 }
 
 /**

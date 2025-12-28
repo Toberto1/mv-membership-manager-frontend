@@ -33,8 +33,8 @@
 
 <body>
     <div class="preview-banner">
-        Design Preview – Static Demo
-        <a href="index.html">← Back to App</a>
+        Redesign Beta – Live Data
+        <a href="index.html">← Back to Original</a>
     </div>
 
     <div class="app-container">
@@ -43,18 +43,19 @@
             <h1>Membership Management</h1>
 
             <div class="header-search">
-                <input type="text" id="searchInput" placeholder="Search members..." oninput="toggleSuggestions()">
+                <input type="text" id="searchInput" placeholder="Search members...">
+                <button type="button" class="search-clear" id="searchClear" title="Clear search">×</button>
             </div>
 
             <div class="header-actions">
                 <div class="filter-pills">
-                    <button class="filter-pill open" onclick="this.classList.toggle('active')">Open</button>
-                    <button class="filter-pill classes" onclick="this.classList.toggle('active')">Classes</button>
-                    <button class="filter-pill athletic" onclick="this.classList.toggle('active')">Athletic</button>
+                    <button class="filter-pill open">Open</button>
+                    <button class="filter-pill classes">Classes</button>
+                    <button class="filter-pill athletic">Athletic</button>
                 </div>
                 <div class="header-user">
                     <span>admin</span>
-                    <button class="btn btn-ghost btn-sm" style="color: rgba(255,255,255,0.6);" onclick="document.documentElement.classList.toggle('darkmode')">◐</button>
+                    <button class="btn btn-ghost btn-sm" style="color: rgba(255,255,255,0.6);" onclick="toggleTheme()">◐</button>
                 </div>
             </div>
         </header>
@@ -62,18 +63,39 @@
         <!-- Body: Sidebar + Main -->
         <div class="app-body">
             <!-- Sidebar -->
-            <aside class="sidebar">
+            <aside class="sidebar" id="sidebar">
+                <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar">
+                    <span class="toggle-icon">☰</span>
+                </button>
                 <nav class="sidebar-nav">
-                    <button class="nav-item active" data-tab="search">Search Members</button>
-                    <button class="nav-item" data-tab="add">Add Account</button>
-                    <button class="nav-item hidden" data-tab="edit" id="editNavItem">Edit Account</button>
-                    <button class="nav-item" data-tab="checkins">Daily Check-ins</button>
-                    <button class="nav-item" data-tab="log">Activity Log</button>
+                    <button class="nav-item active" data-tab="search">
+                        <span class="nav-icon">🔍</span>
+                        <span class="nav-label">Search</span>
+                    </button>
+                    <button class="nav-item" data-tab="add">
+                        <span class="nav-icon">➕</span>
+                        <span class="nav-label">Add Account</span>
+                    </button>
+                    <button class="nav-item hidden" data-tab="edit" id="editNavItem">
+                        <span class="nav-icon">✏️</span>
+                        <span class="nav-label">Edit Account</span>
+                    </button>
+                    <button class="nav-item" data-tab="checkins">
+                        <span class="nav-icon">✓</span>
+                        <span class="nav-label">Check-ins</span>
+                    </button>
+                    <button class="nav-item" data-tab="log">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-label">Activity Log</span>
+                    </button>
                     <div class="nav-divider"></div>
-                    <button class="nav-item" data-tab="settings">Settings</button>
+                    <button class="nav-item" data-tab="settings">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-label">Settings</span>
+                    </button>
                 </nav>
                 <div class="sidebar-footer">
-                    v2.1.0
+                    <span class="nav-label">v2.1.0</span>
                 </div>
             </aside>
 
@@ -81,100 +103,53 @@
             <main class="main-content">
                 <!-- Search Tab -->
                 <div class="tab-content" id="tab-search">
-                    <!-- Suggestions/Upcoming (shown when no search) -->
-                    <div id="suggestions-content">
-                        <!-- Upcoming Classes -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h2 class="card-title">Upcoming Classes</h2>
-                                <span class="text-muted text-sm">Next 30 minutes</span>
-                            </div>
-                            <div class="upcoming-classes">
-                                <div class="upcoming-class-chip classes">
-                                    <span class="class-name">Kids Ninja (Ages 5-8)</span>
-                                    <span class="class-time">4:00 PM</span>
-                                </div>
-                                <div class="upcoming-class-chip opengym">
-                                    <span class="class-name">Open Gym</span>
-                                    <span class="class-time">4:30 PM</span>
+                    <!-- Two-Panel Check-in Layout (shown when no search) -->
+                    <div id="suggestions-content" class="checkin-layout">
+                        <!-- Left Panel: Schedule Sidebar -->
+                        <div class="checkin-schedule-panel">
+                            <div class="schedule-panel-header">
+                                <span class="schedule-panel-title">Today's Classes</span>
+                                <div class="schedule-date-nav">
+                                    <button class="btn btn-ghost btn-xs" id="schedule-prev-day">‹</button>
+                                    <span class="schedule-date-display" id="schedule-date-display"></span>
+                                    <button class="btn btn-ghost btn-xs" id="schedule-next-day">›</button>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Suggested Check-ins by Age Group -->
-                        <div class="suggestions-grid">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h2 class="card-title">Kids</h2>
-                                    <span class="text-muted text-sm">Classes</span>
-                                </div>
-                                <div class="suggestion-list">
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Miller, Tommy</span>
-                                        <span class="pass-badge classes">Classes</span>
-                                    </div>
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Lee, Sophie</span>
-                                        <span class="pass-badge classes">Classes</span>
-                                    </div>
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Chen, Max</span>
-                                        <span class="pass-badge membership">Monthly</span>
-                                    </div>
-                                </div>
+                            <div class="schedule-class-list" id="schedule-class-list">
+                                <div class="text-muted text-sm" style="padding: 16px; text-align: center;">Loading...</div>
                             </div>
-
-                            <div class="card">
-                                <div class="card-header">
-                                    <h2 class="card-title">Teens</h2>
-                                    <span class="text-muted text-sm">Classes</span>
-                                </div>
-                                <div class="suggestion-list">
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Garcia, Luis</span>
-                                        <span class="pass-badge classes">Classes</span>
-                                    </div>
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Patel, Priya</span>
-                                        <span class="pass-badge membership">Monthly</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header">
-                                    <h2 class="card-title">Adults</h2>
-                                    <span class="text-muted text-sm">Open Gym</span>
-                                </div>
-                                <div class="suggestion-list">
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Wilson, Jake</span>
-                                        <span class="pass-badge opengym">Open <span class="pass-count">3</span></span>
-                                    </div>
-                                    <div class="suggestion-row">
-                                        <span class="suggestion-name">Thompson, Lisa</span>
-                                        <span class="pass-badge opengym">Open <span class="pass-count">5</span></span>
-                                    </div>
-                                </div>
+                            <div class="schedule-general-option">
+                                <button class="schedule-class-item general" id="general-checkin-btn">
+                                    <span class="class-item-name">General Check-in</span>
+                                    <span class="class-item-count" id="general-checkin-count">0</span>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Pass-based Suggestions -->
-                        <div class="card mt-4">
-                            <div class="card-header">
-                                <h2 class="card-title">Predicted Pass Check-ins</h2>
-                                <span class="text-muted text-sm">Based on history</span>
+                        <!-- Right Panel: Check-in Workspace -->
+                        <div class="checkin-workspace-panel">
+                            <!-- Search Bar -->
+                            <div class="checkin-search-bar">
+                                <input type="text" class="form-input" id="checkin-search-input" placeholder="Search members...">
+                                <button class="btn btn-outline btn-sm" id="walkin-btn">+ Walk-in</button>
                             </div>
-                            <div class="suggestion-list">
-                                <div class="suggestion-row">
-                                    <span class="suggestion-name">Brown, Alex</span>
-                                    <span class="pass-badge opengym">Open <span class="pass-count">7</span></span>
-                                    <span class="text-muted text-sm">Usually checks in around now</span>
+
+                            <!-- Search Results (hidden by default) -->
+                            <div class="checkin-search-results hidden" id="checkin-search-results">
+                                <!-- Dynamically populated -->
+                            </div>
+
+                            <!-- Attendees Section -->
+                            <div class="checkin-attendees-section">
+                                <div class="checkin-section-header">
+                                    <div class="class-info">
+                                        <span class="class-info-name" id="selected-class-name">Select a class</span>
+                                        <span class="class-info-time" id="selected-class-time"></span>
+                                    </div>
+                                    <span class="checkin-section-count" id="attendees-count">0</span>
                                 </div>
-                                <div class="suggestion-row">
-                                    <span class="suggestion-name">Martinez, Carlos</span>
-                                    <span class="pass-badge classes">Classes <span class="pass-count">4</span></span>
-                                    <span class="text-muted text-sm">Usually checks in around now</span>
+                                <div class="checkin-attendees-list" id="checkin-attendees-list">
+                                    <div class="empty-state text-muted text-sm">No check-ins yet</div>
                                 </div>
                             </div>
                         </div>
@@ -185,7 +160,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">Members</h2>
-                                <span class="text-muted text-sm">247 total</span>
+                                <span class="text-muted text-sm" id="member-count">0 total</span>
                             </div>
                             <table class="member-table">
                                 <thead>
@@ -198,149 +173,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Werner, Andrew</div>
-                                            <div class="member-contact">andrew.w@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge opengym">Open Gym <span class="pass-count">∞</span></span>
-                                        </td>
-                                        <td>
-                                            <div class="pass-badges">
-                                                <span class="pass-badge classes">Classes <span class="pass-count">5</span></span>
-                                                <span class="pass-badge opengym">Open <span class="pass-count">3</span></span>
-                                            </div>
-                                        </td>
-                                        <td class="member-notes">Prefers morning classes</td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Werner, Andrew')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Shimono, Tamaki</div>
-                                            <div class="member-contact">tamaki.s@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge opengym">Open Gym <span class="pass-count">15d</span></span>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted">—</span>
-                                        </td>
-                                        <td class="member-notes"></td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Shimono, Tamaki')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr onclick="showEditTab()" style="cursor:pointer;">
-                                        <td>
-                                            <div class="member-name">Johnson, Sarah</div>
-                                            <div class="member-contact">sarah.j@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge classes">Classes <span class="pass-count">8d</span></span>
-                                        </td>
-                                        <td>
-                                            <div class="pass-badges">
-                                                <span class="pass-badge classes">Classes <span class="pass-count">10</span></span>
-                                                <span class="pass-badge private">Private <span class="pass-count">2</span></span>
-                                            </div>
-                                        </td>
-                                        <td class="member-notes"></td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="event.stopPropagation(); openCheckinModal('Johnson, Sarah')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Williams, Mike</div>
-                                            <div class="member-contact">mike.w@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge paused">Open Gym <span class="pass-count">Paused</span></span>
-                                            <a href="#" class="action-link" onclick="event.preventDefault(); event.stopPropagation();">Resume</a>
-                                        </td>
-                                        <td>
-                                            <div class="pass-badges">
-                                                <span class="pass-badge opengym">Open <span class="pass-count">1</span></span>
-                                            </div>
-                                        </td>
-                                        <td class="member-notes">Paused until Jan 15</td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Williams, Mike')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Martinez, Carlos</div>
-                                            <div class="member-contact">carlos.m@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge athletic">Athletic <span class="pass-count">22d</span></span>
-                                        </td>
-                                        <td>
-                                            <div class="pass-badges">
-                                                <span class="pass-badge aerial">Aerial <span class="pass-count">4</span></span>
-                                                <span class="pass-badge athletic">Athletic <span class="pass-count">2</span></span>
-                                            </div>
-                                        </td>
-                                        <td class="member-notes"></td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Martinez, Carlos')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Brown, Alex</div>
-                                            <div class="member-contact">alex.brown@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge expired">Classes <span class="pass-count">Exp</span></span>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted">—</span>
-                                        </td>
-                                        <td class="member-notes">Expired Dec 20</td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Brown, Alex')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Garcia, Maria</div>
-                                            <div class="member-contact">maria.g@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="pass-badge notstarted">Classes <span class="pass-count">30d</span></span>
-                                            <a href="#" class="action-link" onclick="event.preventDefault(); event.stopPropagation();">Start</a>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted">—</span>
-                                        </td>
-                                        <td class="member-notes">Not started yet</td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Garcia, Maria')">Check In</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="member-name">Lee, Sophie</div>
-                                            <div class="member-contact">sophie.l@email.com</div>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted">—</span>
-                                        </td>
-                                        <td>
-                                            <div class="pass-badges">
-                                                <span class="pass-badge classes">Classes <span class="pass-count">3</span></span>
-                                            </div>
-                                        </td>
-                                        <td class="member-notes">Kids class only</td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="openCheckinModal('Lee, Sophie')">Check In</button>
-                                        </td>
-                                    </tr>
+                                    <!-- Dynamically populated -->
                                 </tbody>
                             </table>
                         </div>
@@ -367,22 +200,18 @@
                                 <div class="card-body">
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label class="form-label">First Name</label>
-                                            <input type="text" class="form-input" placeholder="First name">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Last Name</label>
-                                            <input type="text" class="form-input" placeholder="Last name">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" id="add-name" placeholder="Full name" required>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label class="form-label">Email</label>
-                                            <input type="email" class="form-input" placeholder="email@example.com">
+                                            <input type="email" class="form-input" id="add-email" placeholder="email@example.com">
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Phone</label>
-                                            <input type="tel" class="form-input" placeholder="(555) 123-4567">
+                                            <input type="tel" class="form-input" id="add-phone" placeholder="(555) 123-4567">
                                         </div>
                                     </div>
                                 </div>
@@ -414,24 +243,24 @@
                                 <div class="card-body">
                                     <div class="passes-grid">
                                         <div class="pass-input-group">
-                                            <label class="form-label">Open Gym Passes</label>
-                                            <input type="number" class="form-input" value="0" min="0">
+                                            <label class="form-label">Open Gym</label>
+                                            <input type="number" class="form-input" id="add-opengym" value="0" min="0">
                                         </div>
                                         <div class="pass-input-group">
-                                            <label class="form-label">Class Passes</label>
-                                            <input type="number" class="form-input" value="0" min="0">
+                                            <label class="form-label">Classes</label>
+                                            <input type="number" class="form-input" id="add-classes" value="0" min="0">
                                         </div>
                                         <div class="pass-input-group">
-                                            <label class="form-label">Private Kid Passes</label>
-                                            <input type="number" class="form-input" value="0" min="0">
+                                            <label class="form-label">Priv Kid</label>
+                                            <input type="number" class="form-input" id="add-privatekid" value="0" min="0">
                                         </div>
                                         <div class="pass-input-group">
-                                            <label class="form-label">Private Adult Passes</label>
-                                            <input type="number" class="form-input" value="0" min="0">
+                                            <label class="form-label">Priv Adult</label>
+                                            <input type="number" class="form-input" id="add-privateadult" value="0" min="0">
                                         </div>
                                         <div class="pass-input-group">
-                                            <label class="form-label">Aerial Silks Passes</label>
-                                            <input type="number" class="form-input" value="0" min="0">
+                                            <label class="form-label">Aerial Silks</label>
+                                            <input type="number" class="form-input" id="add-aerial" value="0" min="0">
                                         </div>
                                     </div>
                                 </div>
@@ -447,7 +276,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label class="form-label">Account Notes</label>
-                                        <textarea class="form-input" rows="6" placeholder="Add any notes about this member..."></textarea>
+                                        <textarea class="form-input" id="add-notes" rows="6" placeholder="Add any notes about this member..."></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -455,8 +284,8 @@
 
                         <!-- Action Buttons -->
                         <div class="account-actions">
-                            <button class="btn btn-primary">Create Account</button>
-                            <button class="btn btn-ghost">Cancel</button>
+                            <button class="btn btn-primary" id="add-submit-btn" onclick="addNewAccount()">Create Account</button>
+                            <button class="btn btn-ghost" onclick="goToTab('search')">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -467,12 +296,12 @@
                         <!-- Account Header -->
                         <div class="account-header-bar">
                             <div class="account-header-info">
-                                <h2 class="account-name">Johnson, Sarah</h2>
-                                <span class="text-muted text-sm">sarah.j@email.com</span>
+                                <h2 class="account-name" id="edit-account-name">Loading...</h2>
+                                <span class="text-muted text-sm" id="edit-account-contact"></span>
                             </div>
                             <div class="account-header-actions">
-                                <button class="btn btn-outline btn-sm" onclick="goToTab('log')">View Logs</button>
-                                <button class="btn btn-ghost btn-sm" onclick="goToTab('search')">Close</button>
+                                <button class="btn btn-outline btn-sm" onclick="viewAccountLogs()">View Logs</button>
+                                <button class="btn btn-ghost btn-sm" onclick="closeEditTab()">Close</button>
                             </div>
                         </div>
 
@@ -491,28 +320,22 @@
                                     <h2 class="card-title">Personal Information</h2>
                                 </div>
                                 <div class="card-body">
+                                    <input type="hidden" id="edit-account-id">
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label class="form-label">First Name</label>
-                                            <input type="text" class="form-input" value="Sarah">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Last Name</label>
-                                            <input type="text" class="form-input" value="Johnson">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" id="edit-name" placeholder="Full name">
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label class="form-label">Email</label>
-                                            <input type="email" class="form-input" value="sarah.j@email.com">
+                                            <input type="email" class="form-input" id="edit-email" placeholder="email@example.com">
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Phone</label>
-                                            <input type="tel" class="form-input" value="(555) 234-5678">
+                                            <input type="tel" class="form-input" id="edit-phone" placeholder="(555) 123-4567">
                                         </div>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button class="btn btn-primary btn-sm">Save Changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -523,23 +346,11 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h2 class="card-title">Memberships</h2>
-                                    <button class="btn btn-primary btn-sm">+ Add Membership</button>
+                                    <button class="btn btn-primary btn-sm" onclick="addMembershipRow()">+ Add Membership</button>
                                 </div>
                                 <div class="card-body">
-                                    <div class="membership-list">
-                                        <div class="membership-item">
-                                            <div class="membership-info">
-                                                <span class="pass-badge classes">Classes</span>
-                                                <div class="membership-details">
-                                                    <span class="membership-status">Active</span>
-                                                    <span class="text-muted text-sm">Ends Jan 15, 2026 (20 days left)</span>
-                                                </div>
-                                            </div>
-                                            <div class="membership-actions">
-                                                <button class="btn btn-ghost btn-sm">Pause</button>
-                                                <button class="btn btn-ghost btn-sm">Edit</button>
-                                            </div>
-                                        </div>
+                                    <div class="membership-form-list" id="edit-memberships-list">
+                                        <!-- Dynamically populated -->
                                     </div>
                                 </div>
                             </div>
@@ -550,52 +361,72 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h2 class="card-title">Passes</h2>
+                                    <div class="pass-preview-badges" id="pass-preview-container">
+                                        <!-- Live preview badges -->
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="passes-grid">
-                                        <div class="pass-input-group">
-                                            <label class="form-label">Open Gym Passes</label>
-                                            <div class="pass-input-row">
-                                                <input type="number" class="form-input" value="0" min="0">
-                                                <button class="btn btn-primary btn-sm">+5</button>
-                                                <button class="btn btn-primary btn-sm">+10</button>
+                                    <div class="passes-edit-grid">
+                                        <div class="pass-edit-item" data-pass="opengym">
+                                            <div class="pass-edit-badge">
+                                                <span class="pass-badge opengym"><span class="badge-label">Open Gym</span><span class="badge-count" id="preview-opengym">0</span></span>
+                                            </div>
+                                            <div class="pass-edit-controls">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('opengym', -1)">−</button>
+                                                <input type="number" class="form-input pass-count-input" id="edit-opengym" value="0" min="0" oninput="updatePassPreview('opengym')">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('opengym', 1)">+</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('opengym', 5)">+5</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('opengym', 10)">+10</button>
                                             </div>
                                         </div>
-                                        <div class="pass-input-group">
-                                            <label class="form-label">Class Passes</label>
-                                            <div class="pass-input-row">
-                                                <input type="number" class="form-input" value="10" min="0">
-                                                <button class="btn btn-primary btn-sm">+5</button>
-                                                <button class="btn btn-primary btn-sm">+10</button>
+                                        <div class="pass-edit-item" data-pass="classes">
+                                            <div class="pass-edit-badge">
+                                                <span class="pass-badge classes"><span class="badge-label">Classes</span><span class="badge-count" id="preview-classes">0</span></span>
+                                            </div>
+                                            <div class="pass-edit-controls">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('classes', -1)">−</button>
+                                                <input type="number" class="form-input pass-count-input" id="edit-classes" value="0" min="0" oninput="updatePassPreview('classes')">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('classes', 1)">+</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('classes', 5)">+5</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('classes', 10)">+10</button>
                                             </div>
                                         </div>
-                                        <div class="pass-input-group">
-                                            <label class="form-label">Private Kid Passes</label>
-                                            <div class="pass-input-row">
-                                                <input type="number" class="form-input" value="0" min="0">
-                                                <button class="btn btn-primary btn-sm">+5</button>
-                                                <button class="btn btn-primary btn-sm">+10</button>
+                                        <div class="pass-edit-item" data-pass="privatekid">
+                                            <div class="pass-edit-badge">
+                                                <span class="pass-badge private"><span class="badge-label">Priv Kid</span><span class="badge-count" id="preview-privatekid">0</span></span>
+                                            </div>
+                                            <div class="pass-edit-controls">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('privatekid', -1)">−</button>
+                                                <input type="number" class="form-input pass-count-input" id="edit-privatekid" value="0" min="0" oninput="updatePassPreview('privatekid')">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('privatekid', 1)">+</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('privatekid', 5)">+5</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('privatekid', 10)">+10</button>
                                             </div>
                                         </div>
-                                        <div class="pass-input-group">
-                                            <label class="form-label">Private Adult Passes</label>
-                                            <div class="pass-input-row">
-                                                <input type="number" class="form-input" value="2" min="0">
-                                                <button class="btn btn-primary btn-sm">+5</button>
-                                                <button class="btn btn-primary btn-sm">+10</button>
+                                        <div class="pass-edit-item" data-pass="privateadult">
+                                            <div class="pass-edit-badge">
+                                                <span class="pass-badge private"><span class="badge-label">Priv Adult</span><span class="badge-count" id="preview-privateadult">0</span></span>
+                                            </div>
+                                            <div class="pass-edit-controls">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('privateadult', -1)">−</button>
+                                                <input type="number" class="form-input pass-count-input" id="edit-privateadult" value="0" min="0" oninput="updatePassPreview('privateadult')">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('privateadult', 1)">+</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('privateadult', 5)">+5</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('privateadult', 10)">+10</button>
                                             </div>
                                         </div>
-                                        <div class="pass-input-group">
-                                            <label class="form-label">Aerial Silks Passes</label>
-                                            <div class="pass-input-row">
-                                                <input type="number" class="form-input" value="0" min="0">
-                                                <button class="btn btn-primary btn-sm">+5</button>
-                                                <button class="btn btn-primary btn-sm">+10</button>
+                                        <div class="pass-edit-item" data-pass="aerial">
+                                            <div class="pass-edit-badge">
+                                                <span class="pass-badge aerial"><span class="badge-label">Aerial</span><span class="badge-count" id="preview-aerial">0</span></span>
+                                            </div>
+                                            <div class="pass-edit-controls">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('aerial', -1)">−</button>
+                                                <input type="number" class="form-input pass-count-input" id="edit-aerial" value="0" min="0" oninput="updatePassPreview('aerial')">
+                                                <button class="btn btn-outline btn-sm" onclick="addPasses('aerial', 1)">+</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('aerial', 5)">+5</button>
+                                                <button class="btn btn-primary btn-sm" onclick="addPasses('aerial', 10)">+10</button>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-actions mt-4">
-                                        <button class="btn btn-primary btn-sm">Save Passes</button>
                                     </div>
                                 </div>
                             </div>
@@ -610,71 +441,33 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label class="form-label">Account Notes</label>
-                                        <textarea class="form-input" rows="6">Prefers afternoon classes. Has a knee injury - avoid high impact exercises.</textarea>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button class="btn btn-primary btn-sm">Save Notes</button>
+                                        <textarea class="form-input" id="edit-notes" rows="6" placeholder="Add notes about this member..."></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Action Buttons -->
+                        <div class="account-actions">
+                            <button class="btn btn-primary" id="edit-save-btn" onclick="saveEditedAccount()">Save Changes</button>
+                            <button class="btn btn-ghost" onclick="closeEditTab()">Cancel</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Check-ins Tab -->
+                <!-- Daily Check-ins Tab (Daily Activity Log) -->
                 <div class="tab-content hidden" id="tab-checkins">
-                    <div class="checkin-header">
-                        <div class="date-nav">
-                            <button class="btn btn-ghost btn-sm">‹</button>
-                            <input type="date" class="date-input" value="2025-12-26">
-                            <button class="btn btn-ghost btn-sm">›</button>
-                            <button class="btn btn-outline btn-sm">Today</button>
+                    <div class="daily-checkins-layout">
+                        <!-- Main List -->
+                        <div class="daily-checkins-list" id="dailyCheckin-list">
+                            <div class="text-muted text-sm" style="padding: 24px; text-align: center;">Loading...</div>
                         </div>
-                        <button class="btn btn-primary btn-sm">Refresh</button>
-                    </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Today's Check-ins</h2>
-                            <span class="text-muted text-sm">12 total</span>
-                        </div>
-                        <div class="checkin-list">
-                            <div class="checkin-row">
-                                <span class="checkin-time">10:45 AM</span>
-                                <span class="checkin-name">Smith, John</span>
-                                <span class="checkin-type membership">Monthly</span>
-                                <button class="btn btn-ghost btn-sm">Undo</button>
-                            </div>
-                            <div class="checkin-row">
-                                <span class="checkin-time">10:30 AM</span>
-                                <span class="checkin-name">Johnson, Sarah</span>
-                                <span class="checkin-type classes">Classes (9 left)</span>
-                                <button class="btn btn-ghost btn-sm">Undo</button>
-                            </div>
-                            <div class="checkin-row">
-                                <span class="checkin-time">10:15 AM</span>
-                                <span class="checkin-name">Davis, Emma</span>
-                                <span class="checkin-type opengym">Open Gym (2 left)</span>
-                                <button class="btn btn-ghost btn-sm">Undo</button>
-                            </div>
-                            <div class="checkin-row">
-                                <span class="checkin-time">9:45 AM</span>
-                                <span class="checkin-name">Wilson, Robert</span>
-                                <span class="checkin-type membership">Monthly</span>
-                                <button class="btn btn-ghost btn-sm">Undo</button>
-                            </div>
-                            <div class="checkin-row">
-                                <span class="checkin-time">9:30 AM</span>
-                                <span class="checkin-name">Taylor, Lisa</span>
-                                <span class="checkin-type classes">Classes (5 left)</span>
-                                <button class="btn btn-ghost btn-sm">Undo</button>
-                            </div>
-                            <div class="checkin-row">
-                                <span class="checkin-time">9:00 AM</span>
-                                <span class="checkin-name">Anderson, James</span>
-                                <span class="checkin-type opengym">Open Gym (7 left)</span>
-                                <button class="btn btn-ghost btn-sm">Undo</button>
-                            </div>
+                        <!-- Sidebar -->
+                        <div class="daily-checkins-sidebar">
+                            <div class="daily-checkins-info" id="dailyCheckin-info"></div>
+                            <input type="date" class="form-input" id="dailyCheckinDate">
+                            <button class="btn btn-outline" id="refresh-daily-checkins">Refresh</button>
                         </div>
                     </div>
                 </div>
@@ -691,93 +484,44 @@
                             <div class="filter-row">
                                 <div class="filter-group">
                                     <label class="form-label">Start Date</label>
-                                    <input type="date" class="form-input" value="2025-12-01">
+                                    <input type="date" class="form-input" id="log-start-date">
                                 </div>
                                 <div class="filter-group">
                                     <label class="form-label">End Date</label>
-                                    <input type="date" class="form-input" value="2025-12-26">
-                                </div>
-                                <div class="filter-group">
-                                    <label class="form-label">Action Type</label>
-                                    <select class="form-select">
-                                        <option>All Actions</option>
-                                        <option>Check-ins</option>
-                                        <option>Account Changes</option>
-                                        <option>Pass Updates</option>
-                                        <option>Membership Changes</option>
-                                    </select>
+                                    <input type="date" class="form-input" id="log-end-date">
                                 </div>
                                 <div class="filter-group">
                                     <label class="form-label">Limit</label>
-                                    <input type="number" class="form-input" value="100" max="500">
+                                    <input type="number" class="form-input" id="log-limit" value="100" min="1" max="500">
                                 </div>
                             </div>
                             <div class="filter-presets">
                                 <span class="text-sm text-muted">Presets:</span>
-                                <button class="btn btn-outline btn-sm">Today</button>
-                                <button class="btn btn-outline btn-sm">Last 7 Days</button>
-                                <button class="btn btn-outline btn-sm">Last 30 Days</button>
-                                <button class="btn btn-outline btn-sm">All Time</button>
+                                <button class="btn btn-outline btn-sm" onclick="setLogPreset('today')">Today</button>
+                                <button class="btn btn-outline btn-sm" onclick="setLogPreset('7')">Last 7 Days</button>
+                                <button class="btn btn-outline btn-sm" onclick="setLogPreset('30')">Last 30 Days</button>
+                                <button class="btn btn-outline btn-sm" onclick="setLogPreset('alltime')">All Time</button>
                             </div>
                             <div class="filter-actions">
-                                <button class="btn btn-primary btn-sm">Apply Filters</button>
-                                <button class="btn btn-ghost btn-sm">Clear Account Filter</button>
+                                <button class="btn btn-primary btn-sm" onclick="loadActivityLog()">Apply Filters</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Results Info -->
-                    <div class="log-info text-sm text-muted mb-4">
-                        Showing 100 results from Dec 1, 2025 to Dec 26, 2025
+                    <div class="log-info text-sm text-muted mb-4" id="log-info">
+                        <!-- Dynamically populated -->
                     </div>
 
                     <!-- Log Results -->
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">Activity Log</h2>
+                            <span class="text-muted text-sm" id="log-count">0 results</span>
                         </div>
-                        <div class="log-list">
-                            <div class="log-row">
-                                <span class="log-time">10:45 AM</span>
-                                <span class="log-date">Dec 26</span>
-                                <span class="log-action">Check-in: Smith, John</span>
-                                <span class="log-type checkin">Check-in</span>
-                                <span class="log-user">staff</span>
-                            </div>
-                            <div class="log-row">
-                                <span class="log-time">10:30 AM</span>
-                                <span class="log-date">Dec 26</span>
-                                <span class="log-action">Pass added: Johnson, Sarah (+5 classes)</span>
-                                <span class="log-type pass">Pass Update</span>
-                                <span class="log-user">admin</span>
-                            </div>
-                            <div class="log-row">
-                                <span class="log-time">10:15 AM</span>
-                                <span class="log-date">Dec 26</span>
-                                <span class="log-action">Account created: New Member</span>
-                                <span class="log-type account">Account</span>
-                                <span class="log-user">admin</span>
-                            </div>
-                            <div class="log-row">
-                                <span class="log-time">9:45 AM</span>
-                                <span class="log-date">Dec 26</span>
-                                <span class="log-action">Membership paused: Williams, Mike</span>
-                                <span class="log-type membership">Membership</span>
-                                <span class="log-user">admin</span>
-                            </div>
-                            <div class="log-row">
-                                <span class="log-time">4:30 PM</span>
-                                <span class="log-date">Dec 25</span>
-                                <span class="log-action">Check-in: Davis, Emma</span>
-                                <span class="log-type checkin">Check-in</span>
-                                <span class="log-user">staff</span>
-                            </div>
-                            <div class="log-row">
-                                <span class="log-time">3:15 PM</span>
-                                <span class="log-date">Dec 25</span>
-                                <span class="log-action">Membership renewed: Garcia, Maria</span>
-                                <span class="log-type membership">Membership</span>
-                                <span class="log-user">admin</span>
+                        <div class="log-list" id="log-list">
+                            <div class="text-muted text-sm" style="padding: 24px; text-align: center;">
+                                Select filters and click Apply to load activity log
                             </div>
                         </div>
                     </div>
@@ -785,150 +529,100 @@
 
                 <!-- Settings Tab -->
                 <div class="tab-content hidden" id="tab-settings">
-                    <div class="settings-grid">
-                        <!-- Staff Accounts -->
-                        <div class="settings-section">
-                            <div class="settings-section-header">Staff Accounts</div>
-                            <div class="settings-section-body">
-                                <div class="staff-item">
-                                    <div class="staff-info">
-                                        <span class="staff-name">admin</span>
-                                        <span class="staff-role admin">Admin</span>
-                                    </div>
-                                    <span class="text-muted text-sm">You</span>
+                    <!-- Settings Sub-Navigation -->
+                    <div class="settings-subnav">
+                        <button class="settings-subnav-item active" data-settings-tab="schedule">Schedule</button>
+                        <button class="settings-subnav-item" data-settings-tab="accounts">Staff Accounts</button>
+                        <button class="settings-subnav-item" data-settings-tab="security">Security</button>
+                    </div>
+
+                    <!-- Schedule Sub-Tab (Full Width) -->
+                    <div class="settings-subtab" id="settings-schedule">
+                        <!-- Class Combos Section (Collapsible) -->
+                        <div class="schedule-section collapsible">
+                            <div class="schedule-section-header clickable" id="combos-toggle">
+                                <div class="section-title-row">
+                                    <span class="collapse-icon">▶</span>
+                                    <h4>Class Combos</h4>
+                                    <span class="combo-count text-muted" id="combo-count"></span>
                                 </div>
-                                <div class="staff-item">
-                                    <div class="staff-info">
-                                        <span class="staff-name">staff</span>
-                                        <span class="staff-role employee">Employee</span>
-                                    </div>
-                                    <button class="btn btn-ghost btn-sm">Disable</button>
-                                </div>
-                                <div class="staff-item">
-                                    <div class="staff-info">
-                                        <span class="staff-name">frontdesk</span>
-                                        <span class="staff-role employee">Employee</span>
-                                    </div>
-                                    <button class="btn btn-ghost btn-sm">Disable</button>
-                                </div>
-                                <button class="btn btn-primary btn-sm mt-4">+ Add Staff</button>
+                                <button class="btn btn-primary btn-sm" id="new-combo-btn">+ New</button>
+                            </div>
+                            <div id="combos-list-container" class="combos-list collapsed">
+                                <p class="text-muted">Loading combos...</p>
                             </div>
                         </div>
 
-                        <!-- Class Schedule -->
-                        <div class="settings-section schedule-section">
-                            <div class="settings-section-header">
-                                Class Schedule
-                                <select class="schedule-day-filter">
-                                    <option value="all">All Days</option>
-                                    <option value="0">Sunday</option>
-                                    <option value="1">Monday</option>
-                                    <option value="2">Tuesday</option>
-                                    <option value="3">Wednesday</option>
-                                    <option value="4">Thursday</option>
-                                    <option value="5">Friday</option>
-                                    <option value="6">Saturday</option>
-                                </select>
-                            </div>
-                            <div class="settings-section-body">
-                                <div class="schedule-list">
-                                    <div class="schedule-item">
-                                        <div class="schedule-day-badge">Mon</div>
-                                        <div class="schedule-info">
-                                            <span class="schedule-name">Kids Ninja (Ages 5-8)</span>
-                                            <span class="schedule-time">4:00 PM - 5:00 PM</span>
-                                        </div>
-                                        <div class="schedule-actions">
-                                            <button class="btn btn-ghost btn-sm">Edit</button>
-                                            <button class="btn btn-ghost btn-sm">Delete</button>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-day-badge">Mon</div>
-                                        <div class="schedule-info">
-                                            <span class="schedule-name">Teen Parkour</span>
-                                            <span class="schedule-time">5:30 PM - 6:30 PM</span>
-                                        </div>
-                                        <div class="schedule-actions">
-                                            <button class="btn btn-ghost btn-sm">Edit</button>
-                                            <button class="btn btn-ghost btn-sm">Delete</button>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-day-badge">Tue</div>
-                                        <div class="schedule-info">
-                                            <span class="schedule-name">Adult Parkour</span>
-                                            <span class="schedule-time">7:00 PM - 8:30 PM</span>
-                                        </div>
-                                        <div class="schedule-actions">
-                                            <button class="btn btn-ghost btn-sm">Edit</button>
-                                            <button class="btn btn-ghost btn-sm">Delete</button>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-day-badge">Wed</div>
-                                        <div class="schedule-info">
-                                            <span class="schedule-name">Kids Ninja (Ages 5-8)</span>
-                                            <span class="schedule-time">4:00 PM - 5:00 PM</span>
-                                        </div>
-                                        <div class="schedule-actions">
-                                            <button class="btn btn-ghost btn-sm">Edit</button>
-                                            <button class="btn btn-ghost btn-sm">Delete</button>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-day-badge">Sat</div>
-                                        <div class="schedule-info">
-                                            <span class="schedule-name">Open Gym</span>
-                                            <span class="schedule-time">10:00 AM - 1:00 PM</span>
-                                        </div>
-                                        <div class="schedule-actions">
-                                            <button class="btn btn-ghost btn-sm">Edit</button>
-                                            <button class="btn btn-ghost btn-sm">Delete</button>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-day-badge">Sat</div>
-                                        <div class="schedule-info">
-                                            <span class="schedule-name">Athletic Training</span>
-                                            <span class="schedule-time">2:00 PM - 4:00 PM</span>
-                                        </div>
-                                        <div class="schedule-actions">
-                                            <button class="btn btn-ghost btn-sm">Edit</button>
-                                            <button class="btn btn-ghost btn-sm">Delete</button>
-                                        </div>
-                                    </div>
+                        <!-- Weekly Schedule Section -->
+                        <div class="schedule-section">
+                            <div class="schedule-section-header">
+                                <h4>Weekly Schedule</h4>
+                                <div class="schedule-filters">
+                                    <select class="schedule-filter" id="schedule-day-filter">
+                                        <option value="all">All Days</option>
+                                        <option value="1">Monday</option>
+                                        <option value="2">Tuesday</option>
+                                        <option value="3">Wednesday</option>
+                                        <option value="4">Thursday</option>
+                                        <option value="5">Friday</option>
+                                        <option value="6">Saturday</option>
+                                        <option value="0">Sunday</option>
+                                    </select>
+                                    <select class="schedule-filter" id="schedule-type-filter">
+                                        <option value="all">All Types</option>
+                                    </select>
                                 </div>
-                                <button class="btn btn-primary btn-sm mt-4">+ Add Class</button>
+                            </div>
+                            <div id="schedule-list-container" class="schedule-full-list">
+                                <p class="text-muted">Loading schedule...</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Change Password -->
-                        <div class="settings-section">
-                            <div class="settings-section-header">Change Password</div>
-                            <div class="settings-section-body">
-                                <div class="form-group">
-                                    <label class="form-label">Current Password</label>
-                                    <input type="password" class="form-input" placeholder="Current password">
+                    <!-- Staff Accounts Sub-Tab -->
+                    <div class="settings-subtab hidden" id="settings-accounts">
+                        <div class="settings-compact">
+                            <div class="settings-section">
+                                <div class="settings-section-header">Staff Accounts</div>
+                                <div class="settings-section-body">
+                                    <div id="staff-list-container">
+                                        <p class="text-muted">Loading staff...</p>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm mt-4" id="add-staff-btn">+ Add Staff</button>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">New Password</label>
-                                    <input type="password" class="form-input" placeholder="New password">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Confirm Password</label>
-                                    <input type="password" class="form-input" placeholder="Confirm password">
-                                </div>
-                                <button class="btn btn-success btn-sm">Update Password</button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- System Info -->
-                        <div class="settings-section">
-                            <div class="settings-section-header">System Info</div>
-                            <div class="settings-section-body">
-                                <p class="text-sm mb-4">Logged in as: <strong>admin</strong> (Admin)</p>
-                                <p class="text-sm mb-4">App Version: <strong>2.1.0</strong></p>
+                    <!-- Security Sub-Tab -->
+                    <div class="settings-subtab hidden" id="settings-security">
+                        <div class="settings-compact">
+                            <div class="settings-section">
+                                <div class="settings-section-header">Change Password</div>
+                                <div class="settings-section-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Current Password</label>
+                                        <input type="password" class="form-input" id="current-password" placeholder="Current password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">New Password</label>
+                                        <input type="password" class="form-input" id="new-password" placeholder="New password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Confirm Password</label>
+                                        <input type="password" class="form-input" id="confirm-password" placeholder="Confirm password">
+                                    </div>
+                                    <div id="password-change-error" class="error-text"></div>
+                                    <button class="btn btn-success btn-sm" id="change-password-btn">Update Password</button>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <div class="settings-section-header">System Info</div>
+                                <div class="settings-section-body">
+                                    <p class="text-sm mb-4">Logged in as: <strong id="current-user-display">Loading...</strong></p>
+                                    <p class="text-sm mb-4">App Version: <strong>2.1.0</strong></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1087,28 +781,90 @@
         </div>
     </div>
 
+    <!-- Walk-in Modal -->
+    <div class="modal-overlay hidden" id="walkin-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Walk-in</h3>
+                <button class="modal-close" onclick="closeWalkinModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="walkin-name" placeholder="Enter name...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Class</label>
+                    <select class="form-select" id="walkin-class">
+                        <option value="">Select class...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeWalkinModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addWalkin()">Add Walk-in</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Check-in Modal -->
+    <div class="modal-overlay hidden" id="class-checkin-modal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="class-checkin-title">Class Check-in</h3>
+                <button class="modal-close" onclick="closeClassCheckinModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Class Info Preview -->
+                <div class="class-preview" id="class-checkin-preview">
+                    <span class="class-preview-dot" id="class-checkin-dot"></span>
+                    <span class="class-preview-text" id="class-checkin-text"></span>
+                </div>
+
+                <!-- Already Checked In -->
+                <div class="checkin-section" id="class-attendees-section">
+                    <div class="checkin-section-header">
+                        <span class="checkin-section-title">Checked In</span>
+                        <span class="checkin-section-count" id="class-attendees-count">0</span>
+                    </div>
+                    <div class="attendees-list" id="class-attendees-list">
+                        <div class="text-muted text-sm">No check-ins yet</div>
+                    </div>
+                </div>
+
+                <!-- Suggested Members -->
+                <div class="checkin-section" id="class-suggestions-section">
+                    <div class="checkin-section-header">
+                        <span class="checkin-section-title">Suggested</span>
+                        <span class="text-muted text-sm">Based on membership</span>
+                    </div>
+                    <div class="suggestions-list" id="class-suggestions-list">
+                        <div class="text-muted text-sm">Loading suggestions...</div>
+                    </div>
+                </div>
+
+                <!-- Quick Search -->
+                <div class="checkin-section">
+                    <div class="checkin-section-header">
+                        <span class="checkin-section-title">Search</span>
+                    </div>
+                    <input type="text" class="form-input" id="class-checkin-search" placeholder="Search for member...">
+                    <div class="search-results-list" id="class-search-results">
+                        <!-- Search results appear here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeClassCheckinModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main application script -->
+    <script type="module" src="./js/main-redesign.js"></script>
+
+    <!-- Sub-tab navigation (UI only) -->
     <script>
-        // Tab navigation
-        const navItems = document.querySelectorAll('.nav-item');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const tab = item.dataset.tab;
-                if (!tab) return;
-                goToTab(tab);
-            });
-        });
-
-        function goToTab(tab) {
-            navItems.forEach(n => n.classList.remove('active'));
-            document.querySelectorAll(`[data-tab="${tab}"]`).forEach(n => n.classList.add('active'));
-
-            tabContents.forEach(t => t.classList.add('hidden'));
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-        }
-
-        // Sub-tab navigation (Add/Edit Account)
         document.querySelectorAll('.subnav-item').forEach(item => {
             item.addEventListener('click', () => {
                 const subtab = item.dataset.subtab;
@@ -1119,51 +875,6 @@
 
                 parent.querySelectorAll('.account-subtab').forEach(t => t.classList.add('hidden'));
                 document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
-            });
-        });
-
-        // Toggle suggestions vs search results
-        function toggleSuggestions() {
-            const searchInput = document.getElementById('searchInput');
-            const suggestions = document.getElementById('suggestions-content');
-            const results = document.getElementById('search-results-content');
-
-            if (searchInput.value.trim() === '') {
-                suggestions.classList.remove('hidden');
-                results.classList.add('hidden');
-            } else {
-                suggestions.classList.add('hidden');
-                results.classList.remove('hidden');
-            }
-        }
-
-        // Show edit tab
-        function showEditTab() {
-            document.getElementById('editNavItem').classList.remove('hidden');
-            goToTab('edit');
-        }
-
-        // Check-in modal
-        function openCheckinModal(memberName) {
-            document.getElementById('checkin-member-name').textContent = memberName;
-            document.getElementById('checkin-modal').classList.remove('hidden');
-        }
-
-        function closeCheckinModal() {
-            document.getElementById('checkin-modal').classList.add('hidden');
-        }
-
-        function doCheckin(type) {
-            alert(`Checked in using ${type}!`);
-            closeCheckinModal();
-        }
-
-        // Close modal on overlay click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.classList.add('hidden');
-                }
             });
         });
     </script>

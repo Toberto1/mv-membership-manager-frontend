@@ -384,7 +384,7 @@ export function lockout(element, duration, disable = true) {
 
 export function getTimeRangeUTC(buffer) {
     const now = new Date();
-    
+
     // Get UTC components
     const nowUTC = Date.UTC(
         now.getUTCFullYear(),
@@ -400,6 +400,102 @@ export function getTimeRangeUTC(buffer) {
     const end = new Date(nowUTC + buffer * 60 * 1000);
 
     return { start: start, end: end};
+}
+
+// ============================================================================
+// TIMEZONE-AWARE DATE UTILITIES
+// All functions use global.TIMEZONE as the single source of truth
+// ============================================================================
+
+/**
+ * Get current date/time components in app timezone
+ * @returns {Object} { year, month, day, hour, minute, second, dayOfWeek }
+ */
+export function getNowInTimezone() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: global.TIMEZONE,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        weekday: 'short'
+    });
+
+    const parts = formatter.formatToParts(now);
+    const get = (type) => parts.find(p => p.type === type)?.value;
+
+    return {
+        year: parseInt(get('year')),
+        month: parseInt(get('month')),
+        day: parseInt(get('day')),
+        hour: parseInt(get('hour')),
+        minute: parseInt(get('minute')),
+        second: parseInt(get('second')),
+        dayOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'))
+    };
+}
+
+/**
+ * Get current day of week (0-6, Sunday-Saturday) in app timezone
+ */
+export function getCurrentDayInTimezone() {
+    return getNowInTimezone().dayOfWeek;
+}
+
+/**
+ * Get today's date string (YYYY-MM-DD) in app timezone
+ */
+export function getTodayStringInTimezone() {
+    const { year, month, day } = getNowInTimezone();
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+/**
+ * Get time range with buffer in app timezone, formatted for API
+ * @param {number} bufferMinutes - Minutes before and after current time
+ * @returns {Object} { day, startTime, endTime } ready for API calls
+ */
+export function getTimeRangeInTimezone(bufferMinutes) {
+    const now = new Date();
+    const start = new Date(now.getTime() - bufferMinutes * 60 * 1000);
+    const end = new Date(now.getTime() + bufferMinutes * 60 * 1000);
+
+    return {
+        day: getCurrentDayInTimezone(),
+        startTime: formatTimeInTimezone(start),
+        endTime: formatTimeInTimezone(end)
+    };
+}
+
+/**
+ * Format a Date object to time string in app timezone
+ * @param {Date} date
+ * @returns {string} HH:MM:SS format
+ */
+export function formatTimeInTimezone(date) {
+    return date.toLocaleString('en-US', {
+        timeZone: global.TIMEZONE,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+}
+
+/**
+ * Get start and end of a day in app timezone as ISO strings
+ * @param {string} dateStr - YYYY-MM-DD format
+ * @returns {Object} { startTime, endTime } as ISO strings
+ */
+export function getDayBoundsInTimezone(dateStr) {
+    // Create date at midnight in the app timezone
+    const startTime = new Date(`${dateStr}T00:00:00`).toISOString();
+    const endTime = new Date(`${dateStr}T23:59:59.999`).toISOString();
+    return { startTime, endTime };
 }
 
 export function groupPassEntries(entries) {
